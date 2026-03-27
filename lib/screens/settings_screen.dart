@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../models/kali_personality.dart';
 import '../providers/settings_provider.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -76,6 +77,29 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     .toList(),
                 onChanged: (value) {
                   if (value != null) settings.setSelectedModel(value);
+                },
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 24),
+              const Divider(),
+              const SizedBox(height: 16),
+              Text(
+                'Kali Personality',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              const SizedBox(height: 8),
+              DropdownButtonFormField<String>(
+                initialValue: settings.selectedPersonalityId,
+                items: KaliPersonality.all
+                    .map((p) => DropdownMenuItem(
+                          value: p.id,
+                          child: Text('${p.name} — ${p.description}'),
+                        ))
+                    .toList(),
+                onChanged: (value) {
+                  if (value != null) settings.setSelectedPersonality(value);
                 },
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),

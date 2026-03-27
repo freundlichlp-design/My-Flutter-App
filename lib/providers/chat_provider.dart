@@ -161,7 +161,10 @@ class ChatProvider extends ChangeNotifier {
       notifyListeners();
 
       await for (final chunk
-          in apiService.sendMessage(_messages.sublist(0, _messages.length - 1))) {
+          in apiService.sendMessage(
+        _messages.sublist(0, _messages.length - 1),
+        systemPrompt: _settingsProvider.selectedPersonality.systemPrompt,
+      )) {
         _streamingContent += chunk;
         assistantMessage.content = _streamingContent;
         notifyListeners();

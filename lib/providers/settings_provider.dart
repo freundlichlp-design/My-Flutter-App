@@ -2,9 +2,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../models/kali_personality.dart';
+
 class SettingsProvider extends ChangeNotifier {
   static const String _providerPref = 'selected_provider';
   static const String _modelPref = 'selected_model';
+  static const String _personalityPref = 'selected_personality';
 
   static const String _openaiKeyKey = 'openai_api_key';
   static const String _claudeKeyKey = 'claude_api_key';
@@ -17,9 +20,13 @@ class SettingsProvider extends ChangeNotifier {
   String _geminiApiKey = '';
   String _selectedProvider = 'openai';
   String _selectedModel = 'gpt-4o';
+  String _selectedPersonalityId = 'default';
 
   String get selectedProvider => _selectedProvider;
   String get selectedModel => _selectedModel;
+  String get selectedPersonalityId => _selectedPersonalityId;
+  KaliPersonality get selectedPersonality =>
+      KaliPersonality.getById(_selectedPersonalityId);
 
   String get currentApiKey {
     switch (_selectedProvider) {
@@ -72,6 +79,7 @@ class SettingsProvider extends ChangeNotifier {
     _geminiApiKey = await _secureStorage.read(key: _geminiKeyKey) ?? '';
     _selectedProvider = prefs.getString(_providerPref) ?? 'openai';
     _selectedModel = prefs.getString(_modelPref) ?? 'gpt-4o';
+    _selectedPersonalityId = prefs.getString(_personalityPref) ?? 'default';
     if (notify) notifyListeners();
   }
 
@@ -109,6 +117,13 @@ class SettingsProvider extends ChangeNotifier {
     _selectedModel = model;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_modelPref, model);
+    notifyListeners();
+  }
+
+  Future<void> setSelectedPersonality(String personalityId) async {
+    _selectedPersonalityId = personalityId;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_personalityPref, personalityId);
     notifyListeners();
   }
 }
