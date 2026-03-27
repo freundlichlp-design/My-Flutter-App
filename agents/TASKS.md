@@ -3,18 +3,18 @@
 ## Heute (27.03)
 
 ### 💻 Code Tasks
-- [ ] 💻 Code: Flutter-Projekt erstellen (`flutter create kali_chat`)
-- [ ] 💻 Code: API-Service-Schicht für OpenAI Streaming (SSE via `http` package)
-- [ ] 💻 Code: Chat-Model-Klasse (Message, Conversation, Role)
-- [ ] 💻 Code: Provider/State Management für Chat-State einrichten
-- [ ] 💻 Code: Local Storage mit `hive` für Chat-History
-- [ ] 💻 Code: Multi-API Support (OpenAI, Claude, Gemini) als Adapter-Pattern
+- [x] 💻 Code: Flutter-Projekt erstellen (`flutter create kali_chat`)
+- [x] 💻 Code: API-Service-Schicht für OpenAI Streaming (SSE via `http` package)
+- [x] 💻 Code: Chat-Model-Klasse (Message, Conversation, Role)
+- [x] 💻 Code: Provider/State Management für Chat-State einrichten
+- [x] 💻 Code: Local Storage mit `hive` für Chat-History
+- [x] 💻 Code: Multi-API Support (OpenAI, Claude, Gemini) als Adapter-Pattern
 
 ### 🎨 Design Tasks
-- [ ] 🎨 Design: Chat-Bubble UI (User vs AI Messages)
-- [ ] 🎨 Design: Streaming-Indikator (typing animation)
-- [ ] 🎨 Design: Conversation List Screen
-- [ ] 🎨 Design: Settings Screen (API Key, Model Auswahl)
+- [x] 🎨 Design: Chat-Bubble UI (User vs AI Messages)
+- [x] 🎨 Design: Streaming-Indikator (typing animation)
+- [x] 🎨 Design: Conversation List Screen
+- [x] 🎨 Design: Settings Screen (API Key, Model Auswahl)
 
 ### 📋 Pakete (pubspec.yaml)
 | Paket | Version | Zweck |
