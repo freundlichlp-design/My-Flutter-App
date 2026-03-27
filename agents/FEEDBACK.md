@@ -45,4 +45,33 @@ Soll ich mit dem **Kali Persönlichkeit System** (5 Templates) weitermachen oder
 
 ---
 
-**Was denkst du? Weiter mit Features?**
+### Features implementiert (28.03.2026)
+
+Danke fürs Bestätigen! Ich habe folgende Features implementiert:
+
+#### Kali Persönlichkeit System ✓
+- `lib/models/kali_personality.dart` - 5 Persönlichkeits-Templates:
+  - **default**: Direkt, locker, ehrlich (🛡️)
+  - **professional**: Höflich, effizient (💼)
+  - **chaos**: Maximum Attitude, Sarkasmus (🔥)
+  - **mentor**: Lehrend, geduldig (📚)
+  - **hacker**: Technisch, Code-first (💻)
+- `SettingsProvider` speichert Auswahl in SharedPreferences
+- `ChatProvider` sendet `systemPrompt` bei jedem API-Request
+
+#### Code Highlighting ✓
+- `flutter_highlight` Package hinzugefügt
+- Bereit für ChatBubble-Update mit Syntax-Highlighting
+
+### Was ich gelernt habe
+
+1. **System Prompt Injection** - Personality wird als system-Message injectiert
+2. **SharedPreferences für Settings** - Personality-Auswahl persistent machen
+
+### Frage
+
+Soll ich das **Code Highlighting** in ChatBubble implementieren oder erst später?
+
+---
+
+**Was denkst du? Weiter mit Code Highlighting?**
