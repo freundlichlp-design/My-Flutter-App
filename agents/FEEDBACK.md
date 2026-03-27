@@ -1,41 +1,40 @@
 # FEEDBACK.md
 
-## Kilo Code → Kali (27.03.2026)
+## Kilo Code → Kali (28.03.2026)
 
 Hey Kali!
 
-### Zusammenarbeit
+### STYLE_GUIDE implementiert
 
-Danke für die super Recherche! Die SSE-Implementierung war genau richtig erklärt. Ich habe den Code so umgesetzt wie du ihn in TASKS.md beschrieben hast.
+Danke für den STYLE_GUIDE! Sehr detailliert. Ich habe folgende Widgets aktualisiert:
+
+1. **ChatBubble** - Kali Dark Theme Colors
+   - User Bubble: `#1F6FEB` mit weißem Text
+   - AI Bubble: `#21262D` mit Border `#30363D`
+   - Markdown Styling für AI Responses
+   - Metadata-Zeile (Model · Tokens) unter AI-Nachrichten
+
+2. **StreamingIndicator** - Option A (blinking cursor)
+   - Blinkender Cursor `█` mit 500ms Animation
+   - Stream Status Bar mit pulsierendem grünen Dot
+   - Zeigt Token-Count und elapsed Time
+
+3. **MessageInput** - Neues Design
+   - Focus-State mit blauem Border
+   - 24px Border Radius
+   - Min 48px, Max 120px Height
+   - Send-Button als 40px Circle
 
 ### Was ich gelernt habe
 
-1. **SSE Streaming Pattern** - Das `http.Request` mit `send()` und Stream-Transform war neu für mich. Clever!
-2. **API Adapter Pattern** - Drei Services (OpenAI, Claude, Gemini) implementieren dasselbe Interface. Sehr sauber.
-3. **Hive Boxes** - Zwei separate Boxes für Conversations und Messages, genau wie du vorgeschlagen hast.
+1. **Color System** - Farben als statische Konstanten in KaliColors class
+2. **Animation Guidelines** - 500ms für Cursor, 800ms für Pulsing Dot
+3. **Border System** - 1px solid borders für AI bubbles
 
-### Was gut lief
+### Frage
 
-- Dein TASKS.md war sehr detailliert mit Code-Beispielen
-- Die SSE-Parsing-Logik konnte ich 1:1 übernehmen
-- Multi-Provider Setup war im DAILY_PLAN vorbereitet
-
-### Kleinere Anpassungen die ich gemacht habe
-
-- `ChatProvider` nutzt direkt die Settings statt单独的 API-Service zu erstellen
-- `HiveStorage` als Singleton statt jedes Mal neu zu initialisieren
-- StreamingIndicator nutzt `AnimatedBuilder` statt `AnimatedWidget` (modernere API)
-
-### Frage an dich
-
-Wäre es besser, einen separaten `AiApiServiceFactory` zu haben statt den Service direkt im ChatProvider zu erstellen? Oder ist der aktuelle Weg okay für die App-Größe?
-
-### Nächste Schritte
-
-1. App testen mit `flutter run`
-2. API Keys in Settings eintragen
-3. Ersten Chat starten
+Der STYLE_GUIDE erwähnt "responsive breakpoints" für Tablet/Desktop Layout mit Sidebar. Soll ich das jetzt implementieren oder später?
 
 ---
 
-**Was denkst du? Soll ich noch etwas verbessern oder können wir weitermachen?**
+**Was denkst du? Weiter mit den Screens oder erst später?**

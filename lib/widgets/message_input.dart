@@ -1,5 +1,13 @@
 import 'package:flutter/material.dart';
 
+/// Kali Chat App Color Palette
+class KaliColors {
+  static const Color bgTertiary = Color(0xFF21262D);
+  static const Color borderColor = Color(0xFF30363D);
+  static const Color accentPrimary = Color(0xFF58A6FF);
+  static const Color textMuted = Color(0xFF484F58);
+}
+
 class MessageInput extends StatefulWidget {
   final ValueChanged<String> onSend;
   final bool enabled;
@@ -16,6 +24,25 @@ class MessageInput extends StatefulWidget {
 
 class _MessageInputState extends State<MessageInput> {
   final _controller = TextEditingController();
+  final _focusNode = FocusNode();
+  bool _isFocused = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode.addListener(() {
+      setState(() {
+        _isFocused = _focusNode.hasFocus;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    _focusNode.dispose();
+    super.dispose();
+  }
 
   void _handleSend() {
     final text = _controller.text.trim();
@@ -26,57 +53,81 @@ class _MessageInputState extends State<MessageInput> {
   }
 
   @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: 4,
-              offset: const Offset(0, -1),
-            ),
-          ],
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+        decoration: const BoxDecoration(
+          color: KaliColors.bgTertiary,
+          border: Border(
+            top: BorderSide(color: KaliColors.borderColor, width: 1),
+          ),
         ),
         child: Row(
           children: [
+            // Input Field
             Expanded(
-              child: TextField(
-                controller: _controller,
-                enabled: widget.enabled,
-                maxLines: null,
-                textInputAction: TextInputAction.send,
-                onSubmitted: (_) => _handleSend(),
-                decoration: InputDecoration(
-                  hintText: 'Type a message...',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(24),
-                    borderSide: BorderSide.none,
+              child: Container(
+                constraints: const BoxConstraints(
+                  minHeight: 48,
+                  maxHeight: 120,
+                ),
+                decoration: BoxDecoration(
+                  color: KaliColors.bgTertiary,
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(
+                    color: _isFocused
+                        ? KaliColors.accentPrimary
+                        : KaliColors.borderColor,
+                    width: 1,
                   ),
-                  filled: true,
-                  fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 10,
+                ),
+                child: TextField(
+                  controller: _controller,
+                  focusNode: _focusNode,
+                  enabled: widget.enabled,
+                  maxLines: null,
+                  textInputAction: TextInputAction.send,
+                  onSubmitted: (_) => _handleSend(),
+                  style: const TextStyle(
+                    fontSize: 15,
+                    color: Colors.white,
+                    height: 1.5,
+                  ),
+                  decoration: const InputDecoration(
+                    hintText: 'Schreibe eine Nachricht...',
+                    hintStyle: TextStyle(
+                      color: KaliColors.textMuted,
+                      fontSize: 15,
+                    ),
+                    border: InputBorder.none,
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
                   ),
                 ),
               ),
             ),
             const SizedBox(width: 8),
-            IconButton(
-              onPressed: widget.enabled ? _handleSend : null,
-              icon: const Icon(Icons.send),
-              style: IconButton.styleFrom(
-                backgroundColor: Theme.of(context).colorScheme.primary,
-                foregroundColor: Theme.of(context).colorScheme.onPrimary,
+            // Send Button - Circle, 40px, accentPrimary bg
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: widget.enabled
+                    ? KaliColors.accentPrimary
+                    : KaliColors.borderColor,
+                shape: BoxShape.circle,
+              ),
+              child: IconButton(
+                onPressed: widget.enabled ? _handleSend : null,
+                icon: const Icon(
+                  Icons.send,
+                  color: Colors.white,
+                  size: 20,
+                ),
+                padding: EdgeInsets.zero,
               ),
             ),
           ],
