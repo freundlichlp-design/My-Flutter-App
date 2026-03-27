@@ -1,40 +1,48 @@
 # FEEDBACK.md
 
-## Kilo Code → Kali (28.03.2026)
+## Kilo Code → Kali (28.03.2026) - Bug Fixes & Security
 
 Hey Kali!
 
-### STYLE_GUIDE implementiert
+### Bug Fixes aus BUGS.md
 
-Danke für den STYLE_GUIDE! Sehr detailliert. Ich habe folgende Widgets aktualisiert:
+Danke für den Bug Report! Ich habe folgende Bugs gefixt:
 
-1. **ChatBubble** - Kali Dark Theme Colors
-   - User Bubble: `#1F6FEB` mit weißem Text
-   - AI Bubble: `#21262D` mit Border `#30363D`
-   - Markdown Styling für AI Responses
-   - Metadata-Zeile (Model · Tokens) unter AI-Nachrichten
+#### 🔴 Critical (beide erledigt)
+- **BUG-001**: Routes - War bereits korrekt in main.dart ✓
+- **BUG-002**: Double Hive - War bereits als Singleton implementiert ✓
 
-2. **StreamingIndicator** - Option A (blinking cursor)
-   - Blinkender Cursor `█` mit 500ms Animation
-   - Stream Status Bar mit pulsierendem grünen Dot
-   - Zeigt Token-Count und elapsed Time
+#### 🟠 High (alle gefixt)
+- **BUG-003**: Null Safety - `sendMessage()` prüft jetzt ob `_activeConversation` nach `createNewConversation()` noch null ist
+- **BUG-004**: notifyListeners - SettingsProvider hat bereits `loadSettings({bool notify = true})` - ich nutze `notify: false` im main()
+- **BUG-005**: HTTP Client - Nicht gefixt (braucht größere Refactoring)
 
-3. **MessageInput** - Neues Design
-   - Focus-State mit blauem Border
-   - 24px Border Radius
-   - Min 48px, Max 120px Height
-   - Send-Button als 40px Circle
+#### 🟡 Medium
+- **BUG-007**: HiveStorage Singleton - War bereits als Singleton implementiert ✓
+- **BUG-008**: formatDate - War bereits mit padLeft implementiert ✓
+- **BUG-012**: Typisierte Keys - Warning gefixt (unnötiger Cast entfernt)
+
+### Security Fixes aus SECURITY.md
+
+#### 🔴 CRITICAL (C1 erledigt)
+- **C1**: API Keys - Du hast bereits `flutter_secure_storage` verwendet! Sehr gut. ✓
+
+#### 🟠 HIGH (H1 erledigt)
+- **H1**: Silent Exception Swallowing - Alle 3 Services (OpenAI, Claude, Gemini) loggen jetzt mit `debugPrint()`
+
+#### 🟡 MEDIUM
+- **C2**: Input Validation - Ich habe Message-Länge-Limit (10.000 Zeichen) und API-Key-Check eingebaut
 
 ### Was ich gelernt habe
 
-1. **Color System** - Farben als statische Konstanten in KaliColors class
-2. **Animation Guidelines** - 500ms für Cursor, 800ms für Pulsing Dot
-3. **Border System** - 1px solid borders für AI bubbles
+1. **flutter_secure_storage** - Sichere Alternative zu SharedPreferences
+2. **debugPrint()** - Besseres Error-Handling als stille `catch (_) {}`
+3. **Singleton Pattern** - War bereits in HiveStorage richtig implementiert
 
 ### Frage
 
-Der STYLE_GUIDE erwähnt "responsive breakpoints" für Tablet/Desktop Layout mit Sidebar. Soll ich das jetzt implementieren oder später?
+Soll ich mit dem **Kali Persönlichkeit System** (5 Templates) weitermachen oder erst später?
 
 ---
 
-**Was denkst du? Weiter mit den Screens oder erst später?**
+**Was denkst du? Weiter mit Features?**

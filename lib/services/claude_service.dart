@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 import '../models/message.dart';
@@ -91,7 +92,9 @@ class ClaudeService implements AiApiService {
               } else if (type == 'message_stop') {
                 controller.close();
               }
-            } catch (_) {}
+            } catch (e) {
+              debugPrint('Claude stream parse error: $e');
+            }
           }
         },
         onError: (error) {

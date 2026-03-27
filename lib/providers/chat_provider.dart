@@ -25,6 +25,8 @@ class ChatProvider extends ChangeNotifier {
   })  : _storage = storage,
         _settingsProvider = settingsProvider;
 
+  static const int _maxMessageLength = 10000;
+
   List<Conversation> _conversations = [];
   Conversation? _activeConversation;
   List<Message> _messages = [];
@@ -95,15 +97,35 @@ class ChatProvider extends ChangeNotifier {
   }
 
   Future<void> sendMessage(String content) async {
+    // Input validation - SECURITY-C2
     if (content.trim().isEmpty) return;
+    
+    // Check max length
+    if (content.length > _maxMessageLength) {
+      _errorMessage = 'Message too long. Maximum is $_maxMessageLength characters.';
+      _state = ChatState.error;
+      notifyListeners();
+      return;
+    }
+
+    // Check if API key is configured
+    if (!_settingsProvider.isConfigured) {
+      _errorMessage = 'Please configure an API key in Settings first.';
+      _state = ChatState.error;
+      notifyListeners();
+      return;
+    }
 
     if (_activeConversation == null) {
       await createNewConversation();
+      if (_activeConversation == null) return;
     }
+
+    final conversation = _activeConversation!;
 
     final userMessage = Message(
       id: _uuid.v4(),
-      conversationId: _activeConversation!.id,
+      conversationId: conversation.id,
       role: 'user',
       content: content.trim(),
       timestamp: DateTime.now(),
@@ -113,10 +135,10 @@ class ChatProvider extends ChangeNotifier {
     await _storage.saveMessage(userMessage);
 
     if (_messages.length == 1) {
-      _activeConversation!.title =
+      conversation.title =
           content.trim().length > 50 ? '${content.trim().substring(0, 50)}...' : content.trim();
-      _activeConversation!.updatedAt = DateTime.now();
-      await _storage.saveConversation(_activeConversation!);
+      conversation.updatedAt = DateTime.now();
+      await _storage.saveConversation(conversation);
       loadConversations();
     }
 
@@ -129,7 +151,7 @@ class ChatProvider extends ChangeNotifier {
       final apiService = _createApiService();
       final assistantMessage = Message(
         id: _uuid.v4(),
-        conversationId: _activeConversation!.id,
+        conversationId: conversation.id,
         role: 'assistant',
         content: '',
         timestamp: DateTime.now(),
@@ -147,8 +169,8 @@ class ChatProvider extends ChangeNotifier {
 
       await _storage.saveMessage(assistantMessage);
 
-      _activeConversation!.updatedAt = DateTime.now();
-      await _storage.saveConversation(_activeConversation!);
+      conversation.updatedAt = DateTime.now();
+      await _storage.saveConversation(conversation);
       loadConversations();
 
       _state = ChatState.idle;

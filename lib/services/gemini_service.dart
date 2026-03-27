@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 import '../models/message.dart';
@@ -105,7 +106,9 @@ class GeminiService implements AiApiService {
                 }
               }
             }
-          } catch (_) {}
+          } catch (e) {
+            debugPrint('Gemini stream parse error: $e');
+          }
         },
         onError: (error) {
           controller.addError(error);

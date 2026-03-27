@@ -7,10 +7,20 @@ class HiveStorage {
   static const String conversationsBox = 'conversations';
   static const String messagesBox = 'messages';
 
+  static final HiveStorage _instance = HiveStorage._internal();
+
+  factory HiveStorage() => _instance;
+
+  HiveStorage._internal();
+
   static Future<void> init() async {
     await Hive.initFlutter();
-    Hive.registerAdapter(ConversationAdapter());
-    Hive.registerAdapter(MessageAdapter());
+    if (!Hive.isAdapterRegistered(0)) {
+      Hive.registerAdapter(ConversationAdapter());
+    }
+    if (!Hive.isAdapterRegistered(1)) {
+      Hive.registerAdapter(MessageAdapter());
+    }
     await Hive.openBox<Conversation>(conversationsBox);
     await Hive.openBox<Message>(messagesBox);
   }

@@ -22,9 +22,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final settings = context.read<SettingsProvider>();
-      _openaiController.text = settings.openaiApiKey;
-      _claudeController.text = settings.claudeApiKey;
-      _geminiController.text = settings.geminiApiKey;
+      _openaiController.text = settings.getMaskedKey('openai');
+      _claudeController.text = settings.getMaskedKey('claude');
+      _geminiController.text = settings.getMaskedKey('gemini');
     });
   }
 

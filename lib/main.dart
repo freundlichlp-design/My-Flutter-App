@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'providers/article_provider.dart';
 import 'providers/chat_provider.dart';
 import 'providers/settings_provider.dart';
 import 'screens/chat_screen.dart';
@@ -14,7 +13,7 @@ void main() async {
   await HiveStorage.init();
 
   final settingsProvider = SettingsProvider();
-  await settingsProvider.loadSettings();
+  await settingsProvider.loadSettings(notify: false);
 
   final storage = HiveStorage();
   final chatProvider = ChatProvider(
@@ -27,7 +26,6 @@ void main() async {
       providers: [
         ChangeNotifierProvider<SettingsProvider>.value(value: settingsProvider),
         ChangeNotifierProvider<ChatProvider>.value(value: chatProvider),
-        ChangeNotifierProvider(create: (_) => ArticleProvider()),
       ],
       child: const MyApp(),
     ),

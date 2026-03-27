@@ -149,7 +149,7 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
     } else if (diff.inDays < 7) {
       return '${diff.inDays}d ago';
     } else {
-      return '${date.day}/${date.month}';
+      return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}';
     }
   }
 }

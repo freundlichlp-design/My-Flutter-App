@@ -1,12 +1,16 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsProvider extends ChangeNotifier {
-  static const String _openaiKeyPref = 'openai_api_key';
-  static const String _claudeKeyPref = 'claude_api_key';
-  static const String _geminiKeyPref = 'gemini_api_key';
   static const String _providerPref = 'selected_provider';
   static const String _modelPref = 'selected_model';
+
+  static const String _openaiKeyKey = 'openai_api_key';
+  static const String _claudeKeyKey = 'claude_api_key';
+  static const String _geminiKeyKey = 'gemini_api_key';
+
+  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
 
   String _openaiApiKey = '';
   String _claudeApiKey = '';
@@ -14,9 +18,6 @@ class SettingsProvider extends ChangeNotifier {
   String _selectedProvider = 'openai';
   String _selectedModel = 'gpt-4o';
 
-  String get openaiApiKey => _openaiApiKey;
-  String get claudeApiKey => _claudeApiKey;
-  String get geminiApiKey => _geminiApiKey;
   String get selectedProvider => _selectedProvider;
   String get selectedModel => _selectedModel;
 
@@ -42,41 +43,62 @@ class SettingsProvider extends ChangeNotifier {
 
   bool get isConfigured => currentApiKey.isNotEmpty;
 
-  Future<void> loadSettings() async {
+  /// Returns a masked version of the API key for display purposes.
+  /// Never exposes the full key.
+  String getMaskedKey(String provider) {
+    final key = switch (provider) {
+      'claude' => _claudeApiKey,
+      'gemini' => _geminiApiKey,
+      _ => _openaiApiKey,
+    };
+    if (key.isEmpty) return '';
+    if (key.length <= 8) return '••••••••';
+    return '${key.substring(0, 4)}••••${key.substring(key.length - 4)}';
+  }
+
+  /// Returns whether a key is configured for the given provider.
+  bool hasKeyForProvider(String provider) {
+    return switch (provider) {
+      'claude' => _claudeApiKey.isNotEmpty,
+      'gemini' => _geminiApiKey.isNotEmpty,
+      _ => _openaiApiKey.isNotEmpty,
+    };
+  }
+
+  Future<void> loadSettings({bool notify = true}) async {
     final prefs = await SharedPreferences.getInstance();
-    _openaiApiKey = prefs.getString(_openaiKeyPref) ?? '';
-    _claudeApiKey = prefs.getString(_claudeKeyPref) ?? '';
-    _geminiApiKey = prefs.getString(_geminiKeyPref) ?? '';
+    _openaiApiKey = await _secureStorage.read(key: _openaiKeyKey) ?? '';
+    _claudeApiKey = await _secureStorage.read(key: _claudeKeyKey) ?? '';
+    _geminiApiKey = await _secureStorage.read(key: _geminiKeyKey) ?? '';
     _selectedProvider = prefs.getString(_providerPref) ?? 'openai';
     _selectedModel = prefs.getString(_modelPref) ?? 'gpt-4o';
-    notifyListeners();
+    if (notify) notifyListeners();
   }
 
   Future<void> setOpenaiApiKey(String key) async {
     _openaiApiKey = key;
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_openaiKeyPref, key);
+    await _secureStorage.write(key: _openaiKeyKey, value: key);
     notifyListeners();
   }
 
   Future<void> setClaudeApiKey(String key) async {
     _claudeApiKey = key;
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_claudeKeyPref, key);
+    await _secureStorage.write(key: _claudeKeyKey, value: key);
     notifyListeners();
   }
 
   Future<void> setGeminiApiKey(String key) async {
     _geminiApiKey = key;
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_geminiKeyPref, key);
+    await _secureStorage.write(key: _geminiKeyKey, value: key);
     notifyListeners();
   }
 
   Future<void> setSelectedProvider(String provider) async {
     _selectedProvider = provider;
     final models = providerModels[provider] ?? ['gpt-4o'];
-    _selectedModel = models.first;
+    if (!models.contains(_selectedModel)) {
+      _selectedModel = models.first;
+    }
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_providerPref, provider);
     await prefs.setString(_modelPref, _selectedModel);

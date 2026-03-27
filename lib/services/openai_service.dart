@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 import '../models/message.dart';
@@ -92,7 +93,9 @@ class OpenAiService implements AiApiService {
                   controller.add(content);
                 }
               }
-            } catch (_) {}
+            } catch (e) {
+              debugPrint('OpenAI stream parse error: $e');
+            }
           }
         },
         onError: (error) {
