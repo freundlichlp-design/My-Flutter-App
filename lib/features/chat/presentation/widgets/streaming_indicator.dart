@@ -23,6 +23,7 @@ class StreamingIndicator extends StatefulWidget {
 class _StreamingIndicatorState extends State<StreamingIndicator>
     with SingleTickerProviderStateMixin {
   late AnimationController _cursorController;
+  late AnimationController _pulseController;
 
   @override
   void initState() {
@@ -32,11 +33,17 @@ class _StreamingIndicatorState extends State<StreamingIndicator>
       vsync: this,
       duration: KaliDurations.cursor,
     )..repeat(reverse: true);
+    // Neon pulse animation
+    _pulseController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    )..repeat(reverse: true);
   }
 
   @override
   void dispose() {
     _cursorController.dispose();
+    _pulseController.dispose();
     super.dispose();
   }
 
@@ -50,19 +57,36 @@ class _StreamingIndicatorState extends State<StreamingIndicator>
           // AI Bubble with streaming cursor
           Align(
             alignment: Alignment.centerLeft,
-            child: Container(
-              padding: const EdgeInsets.symmetric(
-                vertical: KaliSpacing.md,
-                horizontal: KaliSpacing.md,
-              ),
-              decoration: BoxDecoration(
-                color: KaliColors.bgTertiary,
-                borderRadius: KaliRadius.bubbleAi,
-                border: Border.all(
-                  color: KaliColors.borderColor,
-                  width: 1,
-                ),
-              ),
+            child: AnimatedBuilder(
+              animation: _pulseController,
+              builder: (context, child) {
+                return Container(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: KaliSpacing.md,
+                    horizontal: KaliSpacing.md,
+                  ),
+                  decoration: BoxDecoration(
+                    color: KaliColors.bgTertiary,
+                    borderRadius: KaliRadius.bubbleAi,
+                    border: Border.all(
+                      color: KaliColors.accentPrimary.withValues(
+                        alpha: 0.3 + _pulseController.value * 0.5,
+                      ),
+                      width: 1,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: KaliColors.accentPrimary.withValues(
+                          alpha: 0.08 + _pulseController.value * 0.15,
+                        ),
+                        blurRadius: 12,
+                        spreadRadius: 2,
+                      ),
+                    ],
+                  ),
+                  child: child,
+                );
+              },
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -84,6 +108,35 @@ class _StreamingIndicatorState extends State<StreamingIndicator>
                 ],
               ),
             ),
+          ),
+          // Neon Pulse Bar
+          AnimatedBuilder(
+            animation: _pulseController,
+            builder: (context, _) {
+              return Container(
+                margin: const EdgeInsets.only(
+                  top: KaliSpacing.xs,
+                  left: KaliSpacing.xs,
+                ),
+                height: 3,
+                width: 80,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(KaliRadius.sm),
+                  color: KaliColors.accentPrimary.withValues(
+                    alpha: 0.3 + _pulseController.value * 0.7,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: KaliColors.accentPrimary.withValues(
+                        alpha: 0.2 + _pulseController.value * 0.4,
+                      ),
+                      blurRadius: 8,
+                      spreadRadius: 1,
+                    ),
+                  ],
+                ),
+              );
+            },
           ),
           // Stream Status Bar
           Container(
