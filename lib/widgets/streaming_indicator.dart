@@ -1,13 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// Kali Chat App Color Palette
-class KaliColors {
-  static const Color accentPrimary = Color(0xFF58A6FF);
-  static const Color accentSuccess = Color(0xFF3FB950);
-  static const Color bgTertiary = Color(0xFF21262D);
-  static const Color borderColor = Color(0xFF30363D);
-  static const Color textSecondary = Color(0xFF8B949E);
-}
+import '../theme/kali_colors.dart';
 
 class StreamingIndicator extends StatefulWidget {
   final int? tokenCount;

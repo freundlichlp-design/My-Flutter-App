@@ -6,7 +6,7 @@
 
 ## Task 1: ConversationListItem — Swipe-Action Animationen definieren
 
-**Status:** Offen
+**Status:** ✅ Implementiert
 **Priorität:** Mittel
 **Geschätzter Aufwand:** ~30 Min (Design-Spec)
 
@@ -29,7 +29,7 @@
 
 ## Task 2: Loading Skeleton für Conversation-Liste spezifizieren
 
-**Status:** Offen
+**Status:** ✅ Implementiert
 **Priorität:** Niedrig
 **Geschätzter Aufwand:** ~20 Min (Design-Spec)
 

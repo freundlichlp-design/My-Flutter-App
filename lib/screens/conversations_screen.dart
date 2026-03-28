@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/chat_provider.dart';
+import '../widgets/conversation_list_item.dart';
+import '../widgets/conversation_list_skeleton.dart';
 import 'chat_screen.dart';
 import 'settings_screen.dart';
 
@@ -15,11 +17,14 @@ class ConversationsScreen extends StatefulWidget {
 }
 
 class _ConversationsScreenState extends State<ConversationsScreen> {
+  bool _isLoading = true;
+
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<ChatProvider>().loadConversations();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await context.read<ChatProvider>().loadConversations();
+      if (mounted) setState(() => _isLoading = false);
     });
   }
 
@@ -50,6 +55,10 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
       ),
       body: Consumer<ChatProvider>(
         builder: (context, provider, _) {
+          if (_isLoading) {
+            return const ConversationListSkeleton();
+          }
+
           if (provider.conversations.isEmpty) {
             return Center(
               child: Column(
@@ -92,64 +101,30 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
             itemCount: provider.conversations.length,
             itemBuilder: (context, index) {
               final conversation = provider.conversations[index];
-              return Dismissible(
-                key: Key(conversation.id),
-                direction: DismissDirection.endToStart,
-                background: Container(
-                  alignment: Alignment.centerRight,
-                  padding: const EdgeInsets.only(right: 16),
-                  color: Theme.of(context).colorScheme.error,
-                  child: Icon(
-                    Icons.delete,
-                    color: Theme.of(context).colorScheme.onError,
-                  ),
-                ),
-                onDismissed: (_) {
+              return ConversationListItem(
+                conversation: conversation,
+                onTap: () async {
+                  await provider.selectConversation(conversation.id);
+                  if (context.mounted) {
+                    Navigator.pushNamed(context, ChatScreen.routeName);
+                  }
+                },
+                onDelete: () {
                   provider.deleteConversation(conversation.id);
                 },
-                child: ListTile(
-                  leading: CircleAvatar(
-                    child: Text(
-                      conversation.apiProvider[0].toUpperCase(),
+                onArchive: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Archived: ${conversation.title}'),
+                      duration: const Duration(seconds: 2),
                     ),
-                  ),
-                  title: Text(
-                    conversation.title,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  subtitle: Text(
-                    '${conversation.apiProvider} · ${conversation.model}',
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                  trailing: Text(
-                    _formatDate(conversation.updatedAt),
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                  onTap: () async {
-                    await provider.selectConversation(conversation.id);
-                    if (context.mounted) {
-                      Navigator.pushNamed(context, ChatScreen.routeName);
-                    }
-                  },
-                ),
+                  );
+                },
               );
             },
           );
         },
       ),
     );
-  }
-
-  String _formatDate(DateTime date) {
-    final now = DateTime.now();
-    final diff = now.difference(date);
-    if (diff.inDays == 0) {
-      return '${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
-    } else if (diff.inDays < 7) {
-      return '${diff.inDays}d ago';
-    } else {
-      return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}';
-    }
   }
 }

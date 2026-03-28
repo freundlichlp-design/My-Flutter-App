@@ -2,31 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 
 import '../models/message.dart';
-
-/// Kali Chat App Color Palette (Dark Theme)
-class KaliColors {
-  // Background colors
-  static const Color bgPrimary = Color(0xFF0D1117);
-  static const Color bgSecondary = Color(0xFF161B22);
-  static const Color bgTertiary = Color(0xFF21262D);
-  static const Color borderColor = Color(0xFF30363D);
-  
-  // Text colors
-  static const Color textPrimary = Color(0xFFE6EDF3);
-  static const Color textSecondary = Color(0xFF8B949E);
-  static const Color textMuted = Color(0xFF484F58);
-  
-  // Accent colors
-  static const Color accentPrimary = Color(0xFF58A6FF);
-  static const Color accentSuccess = Color(0xFF3FB950);
-  
-  // Bubble colors
-  static const Color bubbleUser = Color(0xFF1F6FEB);
-  static const Color bubbleUserText = Color(0xFFFFFFFF);
-  static const Color bubbleAi = Color(0xFF21262D);
-  static const Color bubbleAiText = Color(0xFFE6EDF3);
-  static const Color bubbleAiBorder = Color(0xFF30363D);
-}
+import '../theme/kali_colors.dart';
 
 class ChatBubble extends StatelessWidget {
   final Message message;

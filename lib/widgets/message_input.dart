@@ -1,12 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// Kali Chat App Color Palette
-class KaliColors {
-  static const Color bgTertiary = Color(0xFF21262D);
-  static const Color borderColor = Color(0xFF30363D);
-  static const Color accentPrimary = Color(0xFF58A6FF);
-  static const Color textMuted = Color(0xFF484F58);
-}
+import '../theme/kali_colors.dart';
 
 class MessageInput extends StatefulWidget {
   final ValueChanged<String> onSend;
