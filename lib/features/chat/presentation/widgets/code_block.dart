@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_highlight/flutter_highlight.dart';
 import 'package:flutter_highlight/themes/github-dark.dart';
 
-import '../theme/kali_colors.dart';
+import '../../../../theme/kali_colors.dart';
 
 class CodeBlock extends StatelessWidget {
   final String code;

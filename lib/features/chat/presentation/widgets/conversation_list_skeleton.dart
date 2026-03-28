@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../theme/kali_colors.dart';
+import '../../../../theme/kali_colors.dart';
 
 class ConversationListSkeleton extends StatefulWidget {
   final int itemCount;

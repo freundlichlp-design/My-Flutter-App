@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../features/chat/domain/entities/conversation.dart';
-import '../theme/kali_colors.dart';
+import '../../domain/entities/conversation.dart';
+import '../../../../theme/kali_colors.dart';
 
 class ConversationListItem extends StatelessWidget {
   final ConversationEntity conversation;

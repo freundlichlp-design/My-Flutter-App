@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../theme/kali_colors.dart';
+import '../../../../theme/kali_colors.dart';
 
 class MessageInput extends StatefulWidget {
   final ValueChanged<String> onSend;

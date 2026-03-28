@@ -4,8 +4,8 @@ import 'package:provider/provider.dart';
 
 import '../../../../../providers/chat_provider.dart';
 import '../../../../../providers/settings_provider.dart';
-import '../../../../widgets/conversation_list_item.dart';
-import '../../../../widgets/conversation_list_skeleton.dart';
+import '../widgets/conversation_list_item.dart';
+import '../widgets/conversation_list_skeleton.dart';
 
 class ConversationsScreen extends StatefulWidget {
   const ConversationsScreen({super.key});

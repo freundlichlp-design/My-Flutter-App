@@ -3,9 +3,9 @@ import 'package:provider/provider.dart';
 
 import '../../../../../providers/chat_provider.dart';
 import '../../../../../providers/settings_provider.dart';
-import '../../../../widgets/chat_bubble.dart';
-import '../../../../widgets/message_input.dart';
-import '../../../../widgets/streaming_indicator.dart';
+import '../widgets/chat_bubble.dart';
+import '../widgets/message_input.dart';
+import '../widgets/streaming_indicator.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});

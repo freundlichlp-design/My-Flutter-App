@@ -7,6 +7,7 @@ import 'providers/article_provider.dart';
 import 'providers/chat_provider.dart';
 import 'providers/settings_provider.dart';
 import 'storage/hive_storage.dart';
+import 'theme/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -39,10 +40,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp.router(
       title: 'Kali Chat',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
+      theme: AppTheme.darkTheme,
       routerConfig: appRouter,
     );
   }
