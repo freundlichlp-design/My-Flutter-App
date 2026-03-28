@@ -55,6 +55,20 @@ class ChatProvider extends ChangeNotifier {
   String get streamingContent => _streamingContent;
   bool get isStreaming => _state == ChatState.streaming;
 
+  String _kaliErrorMessage(dynamic error) {
+    final msg = error.toString().toLowerCase();
+    if (msg.contains('api key') || msg.contains('apikey') || msg.contains('unauthorized') || msg.contains('401') || msg.contains('403')) {
+      return 'Du hast mich ohne Schlüssel losgeschickt.';
+    }
+    if (msg.contains('network') || msg.contains('socket') || msg.contains('connection') || msg.contains('timeout') || msg.contains('dns')) {
+      return 'Die Verbindung ist so stabil wie eine Beziehung auf Tinder.';
+    }
+    if (msg.contains('rate') || msg.contains('429') || msg.contains('too many')) {
+      return 'Du hast zu viel gefragt. Mach eine Pause.';
+    }
+    return error.toString();
+  }
+
   Future<void> loadConversations() async {
     final result = await _loadConversations();
     result.fold(
@@ -140,7 +154,7 @@ class ChatProvider extends ChangeNotifier {
 
     final apiKey = apiKeys.getKeyForProvider(providerConfig.selectedProvider);
     if (apiKey.isEmpty) {
-      _errorMessage = 'Please configure an API key in Settings first.';
+      _errorMessage = 'Du hast mich ohne Schlüssel losgeschickt.';
       _state = ChatState.error;
       notifyListeners();
       return;
@@ -254,7 +268,7 @@ class ChatProvider extends ChangeNotifier {
           )) {
             chunk.fold(
               (failure) {
-                throw Exception(failure.message);
+                throw Exception(_kaliErrorMessage(failure.message));
               },
               (text) {
                 _streamingContent += text;
@@ -289,7 +303,7 @@ class ChatProvider extends ChangeNotifier {
           _streamingContent = '';
         } catch (e) {
           _state = ChatState.error;
-          _errorMessage = e.toString();
+          _errorMessage = _kaliErrorMessage(e);
           if (_messages.isNotEmpty && _messages.last.content.isEmpty) {
             _messages.removeLast();
           }
