@@ -1,4 +1,4 @@
-import '../models/message.dart';
+import '../features/chat/domain/entities/message.dart';
 
 class EmotionContext {
   final bool isFrustrated;
@@ -72,7 +72,7 @@ class EmotionEngine {
     'security',
   ];
 
-  static EmotionContext analyze(List<Message> history) {
+  static EmotionContext analyze(List<MessageEntity> history) {
     if (history.isEmpty) return const EmotionContext();
 
     final userMessages = history.where((m) => m.isUser).toList();
@@ -100,7 +100,7 @@ class EmotionEngine {
     return null;
   }
 
-  static int _detectRepetitive(List<Message> userMessages) {
+  static int _detectRepetitive(List<MessageEntity> userMessages) {
     if (userMessages.length < 2) return 0;
 
     final lastMessage = userMessages.last.content.toLowerCase().trim();

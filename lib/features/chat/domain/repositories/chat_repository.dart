@@ -14,5 +14,8 @@ abstract class ChatRepository {
   Stream<Either<Failure, String>> sendMessage(
     List<MessageEntity> history, {
     String? systemPrompt,
+    required String provider,
+    required String apiKey,
+    required String model,
   });
 }

@@ -1,35 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'core/di/injection_container.dart';
+import 'core/router/app_router.dart';
 import 'providers/article_provider.dart';
 import 'providers/chat_provider.dart';
 import 'providers/settings_provider.dart';
-import 'screens/chat_screen.dart';
-import 'screens/conversations_screen.dart';
-import 'screens/settings_screen.dart';
 import 'storage/hive_storage.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await HiveStorage.init();
-
-  final settingsProvider = SettingsProvider();
-  await settingsProvider.loadSettings(notify: false);
-
-  final storage = HiveStorage();
-  final chatProvider = ChatProvider(
-    storage: storage,
-    settingsProvider: settingsProvider,
-  );
-
-  final articleProvider = ArticleProvider();
+  await initDependencies();
 
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider<SettingsProvider>.value(value: settingsProvider),
-        ChangeNotifierProvider<ChatProvider>.value(value: chatProvider),
-        ChangeNotifierProvider<ArticleProvider>.value(value: articleProvider),
+        ChangeNotifierProvider<SettingsProvider>.value(
+          value: sl<SettingsProvider>(),
+        ),
+        ChangeNotifierProvider<ChatProvider>(
+          create: (_) => sl<ChatProvider>(),
+        ),
+        ChangeNotifierProvider<ArticleProvider>(
+          create: (_) => sl<ArticleProvider>(),
+        ),
       ],
       child: const MyApp(),
     ),
@@ -41,19 +36,14 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       title: 'Kali Chat',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      initialRoute: ConversationsScreen.routeName,
-      routes: {
-        ConversationsScreen.routeName: (_) => const ConversationsScreen(),
-        ChatScreen.routeName: (_) => const ChatScreen(),
-        SettingsScreen.routeName: (_) => const SettingsScreen(),
-      },
+      routerConfig: appRouter,
     );
   }
 }

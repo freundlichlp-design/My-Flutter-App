@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-import '../providers/chat_provider.dart';
-import '../providers/settings_provider.dart';
-import '../widgets/conversation_list_item.dart';
-import '../widgets/conversation_list_skeleton.dart';
+import '../../../../../providers/chat_provider.dart';
+import '../../../../../providers/settings_provider.dart';
+import '../../../../widgets/conversation_list_item.dart';
+import '../../../../widgets/conversation_list_skeleton.dart';
 
 class ConversationsScreen extends StatefulWidget {
   const ConversationsScreen({super.key});

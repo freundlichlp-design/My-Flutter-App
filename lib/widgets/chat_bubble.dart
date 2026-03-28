@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 
-import '../models/message.dart';
+import '../features/chat/domain/entities/message.dart';
 import '../theme/kali_colors.dart';
 import 'code_block.dart';
 
 class ChatBubble extends StatelessWidget {
-  final Message message;
+  final MessageEntity message;
   final String? model;
   final int? tokenCount;
 

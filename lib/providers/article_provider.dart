@@ -1,23 +1,28 @@
 import 'package:flutter/foundation.dart';
 
-import '../models/article.dart';
-import '../services/article_service.dart';
+import '../features/articles/domain/entities/article.dart';
+import '../features/articles/domain/usecases/fetch_article_detail.dart';
+import '../features/articles/domain/usecases/fetch_articles.dart';
 
 enum ArticleState { initial, loading, success, error }
 
 class ArticleProvider extends ChangeNotifier {
-  final ArticleService _articleService;
+  final FetchArticles _fetchArticles;
+  final FetchArticleDetail _fetchArticleDetail;
 
-  ArticleProvider({ArticleService? articleService})
-      : _articleService = articleService ?? ArticleService();
+  ArticleProvider({
+    required FetchArticles fetchArticles,
+    required FetchArticleDetail fetchArticleDetail,
+  })  : _fetchArticles = fetchArticles,
+        _fetchArticleDetail = fetchArticleDetail;
 
-  List<Article> _articles = [];
-  Article? _selectedArticle;
+  List<ArticleEntity> _articles = [];
+  ArticleEntity? _selectedArticle;
   ArticleState _state = ArticleState.initial;
   String? _errorMessage;
 
-  List<Article> get articles => _articles;
-  Article? get selectedArticle => _selectedArticle;
+  List<ArticleEntity> get articles => _articles;
+  ArticleEntity? get selectedArticle => _selectedArticle;
   ArticleState get state => _state;
   String? get errorMessage => _errorMessage;
 
@@ -30,13 +35,17 @@ class ArticleProvider extends ChangeNotifier {
     _errorMessage = null;
     notifyListeners();
 
-    try {
-      _articles = await _articleService.fetchArticles();
-      _state = ArticleState.success;
-    } catch (e) {
-      _state = ArticleState.error;
-      _errorMessage = e.toString();
-    }
+    final result = await _fetchArticles();
+    result.fold(
+      (failure) {
+        _state = ArticleState.error;
+        _errorMessage = failure.message;
+      },
+      (articles) {
+        _articles = articles;
+        _state = ArticleState.success;
+      },
+    );
 
     notifyListeners();
   }
@@ -46,13 +55,17 @@ class ArticleProvider extends ChangeNotifier {
     _errorMessage = null;
     notifyListeners();
 
-    try {
-      _selectedArticle = await _articleService.fetchArticle(id);
-      _state = ArticleState.success;
-    } catch (e) {
-      _state = ArticleState.error;
-      _errorMessage = e.toString();
-    }
+    final result = await _fetchArticleDetail(id);
+    result.fold(
+      (failure) {
+        _state = ArticleState.error;
+        _errorMessage = failure.message;
+      },
+      (article) {
+        _selectedArticle = article;
+        _state = ArticleState.success;
+      },
+    );
 
     notifyListeners();
   }

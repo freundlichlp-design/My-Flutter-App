@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../models/conversation.dart';
+import '../features/chat/domain/entities/conversation.dart';
 import '../theme/kali_colors.dart';
 
 class ConversationListItem extends StatelessWidget {
-  final Conversation conversation;
+  final ConversationEntity conversation;
   final VoidCallback onTap;
   final VoidCallback onDelete;
   final VoidCallback onArchive;
