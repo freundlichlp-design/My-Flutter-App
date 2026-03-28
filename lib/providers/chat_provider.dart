@@ -7,6 +7,7 @@ import '../models/conversation.dart';
 import '../models/message.dart';
 import '../services/ai_api_service.dart';
 import '../services/claude_service.dart';
+import '../services/emotion_engine.dart';
 import '../services/gemini_service.dart';
 import '../services/openai_service.dart';
 import '../storage/hive_storage.dart';
@@ -161,10 +162,19 @@ class ChatProvider extends ChangeNotifier {
         _messages.add(assistantMessage);
         notifyListeners();
 
+        final messagesForApi = _messages.sublist(0, _messages.length - 1);
+        final emotionContext = EmotionEngine.analyze(messagesForApi);
+        final emotionalPrompt = EmotionEngine.buildEmotionalContext(emotionContext);
+
+        String systemPrompt = _settingsProvider.selectedPersonality.systemPrompt;
+        if (emotionalPrompt.isNotEmpty) {
+          systemPrompt = '$systemPrompt\n\n$emotionalPrompt';
+        }
+
         await for (final chunk
             in apiService.sendMessage(
-          _messages.sublist(0, _messages.length - 1),
-          systemPrompt: _settingsProvider.selectedPersonality.systemPrompt,
+          messagesForApi,
+          systemPrompt: systemPrompt,
         )) {
           _streamingContent += chunk;
           assistantMessage.content = _streamingContent;

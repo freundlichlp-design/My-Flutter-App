@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'providers/article_provider.dart';
 import 'providers/chat_provider.dart';
 import 'providers/settings_provider.dart';
 import 'screens/chat_screen.dart';
@@ -21,11 +22,14 @@ void main() async {
     settingsProvider: settingsProvider,
   );
 
+  final articleProvider = ArticleProvider();
+
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider<SettingsProvider>.value(value: settingsProvider),
         ChangeNotifierProvider<ChatProvider>.value(value: chatProvider),
+        ChangeNotifierProvider<ArticleProvider>.value(value: articleProvider),
       ],
       child: const MyApp(),
     ),
