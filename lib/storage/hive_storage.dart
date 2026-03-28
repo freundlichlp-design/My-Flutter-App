@@ -2,11 +2,13 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 import '../models/conversation.dart';
 import '../models/message.dart';
+import '../models/subscription.dart';
 import 'memory_storage.dart';
 
 class HiveStorage {
   static const String conversationsBox = 'conversations';
   static const String messagesBox = 'messages';
+  static const String subscriptionBox = 'subscription';
 
   static final HiveStorage _instance = HiveStorage._internal();
 
@@ -22,8 +24,12 @@ class HiveStorage {
     if (!Hive.isAdapterRegistered(1)) {
       Hive.registerAdapter(MessageAdapter());
     }
+    if (!Hive.isAdapterRegistered(2)) {
+      Hive.registerAdapter(SubscriptionAdapter());
+    }
     await Hive.openBox<Conversation>(conversationsBox);
     await Hive.openBox<Message>(messagesBox);
+    await Hive.openBox<Subscription>(subscriptionBox);
     await MemoryStorage.init();
   }
 
@@ -77,5 +83,19 @@ class HiveStorage {
   Future<void> clearAll() async {
     await _conversationBox.clear();
     await _messageBox.clear();
+  }
+
+  // ─── Subscription ────────────────────────────────────
+  static const String _subscriptionKey = 'current';
+
+  Box<Subscription> get _subscriptionBox =>
+      Hive.box<Subscription>(subscriptionBox);
+
+  Subscription getSubscription() {
+    return _subscriptionBox.get(_subscriptionKey) ?? Subscription.initial();
+  }
+
+  Future<void> saveSubscription(Subscription subscription) async {
+    await _subscriptionBox.put(_subscriptionKey, subscription);
   }
 }

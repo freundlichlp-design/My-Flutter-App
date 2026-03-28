@@ -7,6 +7,7 @@ import 'providers/article_provider.dart';
 import 'providers/chat_provider.dart';
 import 'providers/memory_provider.dart';
 import 'providers/settings_provider.dart';
+import 'providers/subscription_provider.dart';
 import 'storage/hive_storage.dart';
 import 'theme/app_theme.dart';
 
@@ -20,6 +21,9 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
+        ChangeNotifierProvider<SubscriptionProvider>(
+          create: (_) => SubscriptionProvider(storage: sl<HiveStorage>()),
+        ),
         ChangeNotifierProvider<SettingsProvider>.value(
           value: sl<SettingsProvider>(),
         ),

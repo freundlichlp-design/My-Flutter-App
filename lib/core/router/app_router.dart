@@ -7,6 +7,7 @@ import '../../features/chat/presentation/pages/chat_screen.dart';
 import '../../features/chat/presentation/pages/conversations_screen.dart';
 import '../../features/memory/presentation/pages/memory_settings_screen.dart';
 import '../../features/settings/presentation/pages/settings_screen.dart';
+import '../../features/subscription/presentation/pages/paywall_screen.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -44,6 +45,11 @@ final GoRouter appRouter = GoRouter(
         final id = int.parse(state.pathParameters['id']!);
         return ArticleDetailPage(articleId: id);
       },
+    ),
+    GoRoute(
+      path: '/paywall',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) => const PaywallScreen(),
     ),
   ],
 );

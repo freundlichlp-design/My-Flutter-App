@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../../providers/chat_provider.dart';
 import '../../../../../providers/settings_provider.dart';
+import '../../../../../providers/subscription_provider.dart';
 import '../widgets/chat_bubble.dart';
 import '../widgets/message_input.dart';
 import '../widgets/streaming_indicator.dart';
@@ -33,6 +35,68 @@ class _ChatScreenState extends State<ChatScreen> {
   void dispose() {
     _scrollController.dispose();
     super.dispose();
+  }
+
+  void _handleSend(
+    BuildContext context,
+    ChatProvider provider,
+    SettingsProvider settings,
+    SubscriptionProvider sub,
+    String text, {
+    String? imagePath,
+  }) {
+    if (!sub.canSendMessage) {
+      context.push('/paywall');
+      return;
+    }
+    sub.recordMessageSent();
+    provider.sendMessage(
+      text,
+      apiKeys: settings.apiKeys,
+      providerConfig: settings.providerConfig,
+      personality: settings.selectedPersonality,
+      imagePath: imagePath,
+    );
+  }
+
+  Widget _buildUsageBar(BuildContext context, SubscriptionProvider sub) {
+    final ratio = sub.messagesUsedToday / sub.dailyLimit;
+    final color = sub.remainingMessages <= 2
+        ? Colors.redAccent
+        : sub.remainingMessages <= 5
+            ? Colors.orangeAccent
+            : Theme.of(context).colorScheme.primary;
+
+    return GestureDetector(
+      onTap: () => context.push('/paywall'),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        color: Theme.of(context).colorScheme.surface,
+        child: Row(
+          children: [
+            Expanded(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(4),
+                child: LinearProgressIndicator(
+                  value: ratio,
+                  backgroundColor: Colors.white12,
+                  valueColor: AlwaysStoppedAnimation(color),
+                  minHeight: 4,
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Text(
+              '${sub.remainingMessages} / ${sub.dailyLimit}',
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+            const SizedBox(width: 4),
+            Icon(Icons.lock_open, size: 14, color: Theme.of(context).colorScheme.primary),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -116,23 +180,23 @@ class _ChatScreenState extends State<ChatScreen> {
                         },
                       ),
               ),
-              Consumer<SettingsProvider>(
-                builder: (context, settings, _) {
-                  return MessageInput(
-                    onSend: (text) => provider.sendMessage(
-                      text,
-                      apiKeys: settings.apiKeys,
-                      providerConfig: settings.providerConfig,
-                      personality: settings.selectedPersonality,
-                    ),
-                    onImageSelected: (imagePath) => provider.sendMessage(
-                      '',
-                      apiKeys: settings.apiKeys,
-                      providerConfig: settings.providerConfig,
-                      personality: settings.selectedPersonality,
-                      imagePath: imagePath,
-                    ),
-                    enabled: !provider.isStreaming,
+              Consumer2<SettingsProvider, SubscriptionProvider>(
+                builder: (context, settings, sub, _) {
+                  final canSend = !provider.isStreaming && sub.canSendMessage;
+                  return Column(
+                    children: [
+                      if (!sub.isPremium)
+                        _buildUsageBar(context, sub),
+                      MessageInput(
+                        onSend: (text) => _handleSend(
+                          context, provider, settings, sub, text,
+                        ),
+                        onImageSelected: (imagePath) => _handleSend(
+                          context, provider, settings, sub, '', imagePath: imagePath,
+                        ),
+                        enabled: canSend,
+                      ),
+                    ],
                   );
                 },
               ),
