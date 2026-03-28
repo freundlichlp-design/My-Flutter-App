@@ -1,354 +1,351 @@
-# Bug Report — Kali Chat App
+# Bug Report — Kali Chat App (Tag 2)
 
-**Generated:** 2026-03-27 by Bug Agent  
-**Scope:** All `.dart` files in `lib/` (24 files analyzed)
+**Generated:** 2026-03-28 by Bug Agent (Tag 2)  
+**Scope:** All `.dart` files in `lib/` (24 files analyzed)  
+**Previous Report:** Tag 1 (2026-03-27)
 
 ---
 
-## Summary
+## Tag 1 → Tag 2: Changelog
+
+### ✅ Fixed from Tag 1
+| Bug | Status | Commit |
+|-----|--------|--------|
+| BUG-002: Double Hive Init | ✅ Fixed | `storage_service.dart` deleted, singleton pattern in `HiveStorage` |
+| BUG-003: Null Safety in ChatProvider | ✅ Fixed | Added `if (_activeConversation == null) return;` guard |
+| BUG-004: notifyListeners before Widget Tree | ✅ Fixed | `loadSettings(notify: false)` in `main.dart` |
+| BUG-006: Model Validation on Provider Switch | ✅ Fixed | `if (!models.contains(_selectedModel))` check added |
+| BUG-007: Duplicate HiveStorage | ✅ Fixed | Singleton via `_instance` / `_internal` |
+| BUG-008: Inconsistent Date Format | ✅ Fixed | `padLeft(2, '0')` added |
+| BUG-012: Untyped Key in getConversation | ✅ Fixed | Was removed (no type cast needed with typed box) |
+| BUG-013: Empty API Key Validation | ✅ Fixed | `isConfigured` check before sendMessage |
+| C2 (Security): No Input Validation | ✅ Fixed | `_maxMessageLength` + `isConfigured` check |
+
+### ❌ Still Open from Tag 1
+| Bug | Reason |
+|-----|--------|
+| BUG-001: Unregistered Routes | Still not in `MaterialApp.routes` |
+| BUG-005: HTTP Client Resource Leak | No `dispose()` in any service |
+| BUG-009: Gemini Stream Parser | Same naive cleanup logic |
+| BUG-010: notifyListeners per Chunk | Still fires on every streaming chunk |
+| BUG-011: Scroll-to-Bottom per Build | Still in `build()` |
+
+---
+
+## Summary (Tag 2)
 
 | Severity | Count |
 |----------|-------|
-| Critical | 2     |
+| Critical | 1     |
 | High     | 3     |
-| Medium   | 5     |
+| Medium   | 4     |
 | Low      | 3     |
 
 ---
 
 ## 🔴 Critical
 
-### BUG-001: Unregistered Routes Crash App
+### BUG-014: `DropdownButtonFormField.initialValue` — Deprecated/Removed in Flutter 3.24+
 
 **Severity:** Critical  
-**File:** `lib/main.dart` — line 48  
-**Affected:** `lib/screens/home_page.dart` (no route), `lib/screens/article_detail_page.dart` line 6
+**File:** `lib/screens/settings_screen.dart` — lines 82, 97  
+**New in Tag 2** (Personality System)
 
-`ArticleDetailPage.routeName` (`'/article-detail'`) is defined but **never registered** in the `MaterialApp.routes` map. Same for `HomePage` which has no route at all. Calling `Navigator.pushNamed(context, ArticleDetailPage.routeName)` will throw:
-
-```
-Could not navigate to route "/article-detail". No route registered.
-```
-
-**Fix:** Add routes to `main.dart`:
+Both `DropdownButtonFormField` widgets use the `initialValue` parameter:
 
 ```dart
-routes: {
-  ConversationsScreen.routeName: (_) => const ConversationsScreen(),
-  ChatScreen.routeName: (_) => const ChatScreen(),
-  SettingsScreen.routeName: (_) => const SettingsScreen(),
-  ArticleDetailPage.routeName: (_) => const ArticleDetailPage(),
-},
+// Line 82 — Model selector
+DropdownButtonFormField<String>(
+  initialValue: settings.selectedModel,
+  ...
+
+// Line 97 — Personality selector
+DropdownButtonFormField<String>(
+  initialValue: settings.selectedPersonalityId,
+  ...
 ```
 
-Or use `onGenerateRoute` for argument-based routes.
-
----
-
-### BUG-002: Double Hive Initialization Conflicts
-
-**Severity:** Critical  
-**File:** `lib/storage/storage_service.dart` — line 16, `lib/storage/hive_storage.dart` — line 10  
-**File:** `lib/main.dart` — line 7
-
-`HiveStorage.init()` calls `Hive.initFlutter()` and registers adapters. `StorageService` does the same independently. If both run (e.g. during refactoring), Hive will throw:
+`initialValue` was **removed** in Flutter 3.24. The correct parameter is `value`. On current and future Flutter versions, this will throw:
 
 ```
-HiveError: TypeAdapter already registered (typeId: 0)
+The named parameter 'initialValue' isn't defined.
 ```
 
-Additionally, `StorageService` (112 lines) is **entirely unused** — only `HiveStorage` is referenced. This is dead code that creates maintenance confusion.
-
-**Fix:** Delete `storage_service.dart` entirely, or merge into one class. Add guard in `HiveStorage.init()`:
+**Fix:** Replace both occurrences with `value`:
 
 ```dart
-if (!Hive.isAdapterRegistered(0)) {
-  Hive.registerAdapter(ConversationAdapter());
-}
+DropdownButtonFormField<String>(
+  value: settings.selectedModel,
+  ...
 ```
 
 ---
 
 ## 🟠 High
 
-### BUG-003: Null Safety Risk — Non-null Assertion on Potentially Null Field
+### BUG-001: Unregistered Routes — ArticleDetailPage & HomePage
 
 **Severity:** High  
-**File:** `lib/providers/chat_provider.dart` — line 95
+**File:** `lib/main.dart` — line 48  
+**Persisting from Tag 1**
+
+`ArticleDetailPage.routeName` (`'/article-detail'`) is defined but **never registered** in `MaterialApp.routes`. `HomePage` has no route at all. `HomePage` calls `Navigator.pushNamed(context, ArticleDetailPage.routeName)` which will crash.
+
+Note: This only crashes if `HomePage` is ever navigated to. Currently it's not in the route table, so it's dead code — but `ArticleDetailPage.routeName` is referenced from `HomePage` and will crash if that page is ever used.
+
+**Fix:** Either register the routes or remove the dead article code:
 
 ```dart
-if (_activeConversation == null) {
-  await createNewConversation();
-}
-// ...
-conversationId: _activeConversation!.id,  // line 95 — forced unwrap
-```
+// Option A: Register
+ArticleDetailPage.routeName: (_) => const ArticleDetailPage(),
 
-If `createNewConversation()` fails (storage error, async race), `_activeConversation` remains `null` and the `!` operator throws a `Null check operator used on a null value` exception — crashing the app.
-
-**Fix:** Use null-safe access after null-check:
-
-```dart
-final conversation = _activeConversation;
-if (conversation == null) {
-  await createNewConversation();
-  if (_activeConversation == null) return; // safety guard
-}
+// Option B: Remove home_page.dart, article_detail_page.dart,
+// article_provider.dart, article_service.dart, article.dart
 ```
 
 ---
 
-### BUG-004: `loadSettings()` Called Before Widget Tree — NotifyListeners Warning
+### BUG-005: HTTP Client Resource Leak — No `dispose()` in Any Service
 
 **Severity:** High  
-**File:** `lib/main.dart` — line 11, `lib/providers/settings_provider.dart` — line 42
+**Files:** `lib/services/article_service.dart`, `claude_service.dart`, `gemini_service.dart`, `openai_service.dart`  
+**Persisting from Tag 1**
 
-```dart
-final settingsProvider = SettingsProvider();
-await settingsProvider.loadSettings(); // calls notifyListeners()
-```
+All four services create `http.Client()` but never close it. The `ChatProvider._createApiService()` creates a **new service instance on every message**, each with a new `http.Client`. Over time this leaks connections.
 
-`loadSettings()` calls `notifyListeners()` before the `MultiProvider` is mounted. In debug mode this produces:
-
-```
-Tried to listen to a value exposed with provider, from outside of the widget tree.
-```
-
-This is undefined behavior and may cause the first Consumer to miss the loaded state.
-
-**Fix:** Either remove `notifyListeners()` from `loadSettings()` and set fields directly, or move loading into the widget tree:
-
-```dart
-// Option A: silent load
-Future<void> loadSettings({bool notify = true}) async {
-  // ... set fields ...
-  if (notify) notifyListeners();
-}
-```
-
----
-
-### BUG-005: HTTP Client Resource Leak — No `close()` on ArticleService
-
-**Severity:** High  
-**File:** `lib/services/article_service.dart` — line 10
-
-```dart
-final http.Client _client;
-ArticleService({http.Client? client}) : _client = client ?? http.Client();
-```
-
-The `http.Client` is created but **never closed**. Over time, this leaks HTTP connections, especially on Android/iOS where connection pools are limited. Same issue in `ClaudeService` (line 13), `GeminiService` (line 11), and `OpenAiService` (line 13).
-
-**Fix:** Add `dispose()` method and call it when services are no longer needed:
+**Fix:** Add `dispose()` to each service:
 
 ```dart
 void dispose() => _client.close();
 ```
 
+And call it after stream completes in `ChatProvider`:
+
+```dart
+try {
+  await for (final chunk in apiService.sendMessage(...)) { ... }
+} finally {
+  apiService.dispose(); // or use a shared client
+}
+```
+
+Better: Use a single shared `http.Client` per provider, not per-message.
+
+---
+
+### BUG-015: Duplicate `KaliColors` Class Definition
+
+**Severity:** High  
+**Files:** `lib/widgets/chat_bubble.dart`, `lib/widgets/message_input.dart`, `lib/widgets/streaming_indicator.dart`  
+**New in Tag 2**
+
+`KaliColors` is defined **three separate times** with different subsets of constants:
+
+- `chat_bubble.dart`: 15 constants (full palette)
+- `message_input.dart`: 4 constants (partial)
+- `streaming_indicator.dart`: 5 constants (partial)
+
+These are **independent classes** — changing one doesn't affect the others. Any color update must be done in 3 places. If a developer imports from the wrong file, they'll get a different class with fewer constants.
+
+**Fix:** Create `lib/widgets/kali_colors.dart` with the full definition. Import it everywhere. Delete the duplicates.
+
 ---
 
 ## 🟡 Medium
 
-### BUG-006: Switching Provider Doesn't Validate Model Exists
+### BUG-016: ChatBubble `model` and `tokenCount` Never Passed
 
 **Severity:** Medium  
-**File:** `lib/providers/settings_provider.dart` — line 72
+**File:** `lib/widgets/chat_bubble.dart` (constructor) vs `lib/screens/chat_screen.dart` (usage, line 78)  
+**New in Tag 2**
+
+`ChatBubble` accepts optional `model` and `tokenCount` parameters for AI message metadata:
 
 ```dart
-Future<void> setSelectedProvider(String provider) async {
-  _selectedProvider = provider;
-  final models = providerModels[provider] ?? ['gpt-4o'];
-  _selectedModel = models.first;
-```
-
-Switching from OpenAI (model: `gpt-4o`) to Claude sets model to `claude-sonnet-4-20250514` — correct. But if a user previously selected a non-first model (e.g. `gpt-3.5-turbo`) and switches providers, the previous model name is silently replaced without any UI feedback.
-
-**Fix:** This is mostly OK, but add explicit validation that `_selectedModel` is in `availableModels` after any change:
-
-```dart
-if (!availableModels.contains(_selectedModel)) {
-  _selectedModel = availableModels.first;
+class ChatBubble extends StatelessWidget {
+  final Message message;
+  final String? model;
+  final int? tokenCount;
+  ...
 }
 ```
 
----
-
-### BUG-007: Duplicate `HiveStorage` Instantiation
-
-**Severity:** Medium  
-**File:** `lib/main.dart` — line 13
+But `ChatScreen` never passes them:
 
 ```dart
-await HiveStorage.init();  // static call (line 8)
-final storage = HiveStorage();  // new instance (line 13)
+ChatBubble(message: messages[index]) // no model, no tokenCount
 ```
 
-`HiveStorage.init()` is a static method that opens Hive boxes. Then a `new HiveStorage()` is created to access those boxes via getter properties. This works but is confusing — the static `init()` and instance accessors on the same class is a code smell. The constructor does nothing beyond what the static getters already provide.
+The metadata section at the bottom of AI bubbles is **always hidden**. This was clearly designed but never wired up.
 
-**Fix:** Make `HiveStorage` a proper singleton or use only static methods:
+**Fix:** Either:
+- Store `model` on `Conversation` and pass it to `ChatBubble`
+- Track token counts and pass them
+- Or remove the dead metadata rendering code
+
+---
+
+### BUG-017: Conversation Missing `personalityId` — Personality is Global, Not Per-Conversation
+
+**Severity:** Medium  
+**Files:** `lib/models/conversation.dart`, `lib/providers/chat_provider.dart`  
+**New in Tag 2**
+
+The `Conversation` model has no `personalityId` field. Personality is stored globally in `SettingsProvider._selectedPersonalityId`. This means:
+
+1. Switching personality mid-conversation changes system prompt on next message
+2. User can't have different personalities per conversation
+3. App restart loads global personality, not per-conversation personality
+4. The system prompt sent to the AI is always `settings.selectedPersonality.systemPrompt`
+
+This is a **design issue** more than a crash bug, but it will confuse users who expect conversations to keep their personality.
+
+**Fix:** Add `personalityId` field to `Conversation`:
 
 ```dart
-class HiveStorage {
-  static Box<Conversation> get _conversationBox => Hive.box<Conversation>(conversationsBox);
-  // ... all static methods ...
+@HiveField(6)
+String personalityId;
+```
+
+Use it in `ChatProvider.sendMessage()`:
+
+```dart
+final personality = KaliPersonality.getById(conversation.personalityId);
+// ... systemPrompt: personality.systemPrompt
+```
+
+**⚠️ Note:** Adding a new HiveField requires bumping the Hive type version and writing a migration, or the app will crash on existing data.
+
+---
+
+### BUG-018: Gemini System Prompt Handling — `system_instruction` May Not Work with Stream
+
+**Severity:** Medium  
+**File:** `lib/services/gemini_service.dart` — lines 57-63  
+**Persisting from Tag 1 (re-evaluated)**
+
+The Gemini service uses `system_instruction` in the request body:
+
+```dart
+if (systemPrompt != null) {
+  body['system_instruction'] = {
+    'parts': [{'text': systemPrompt}]
+  };
 }
 ```
 
----
+The Gemini `streamGenerateContent` endpoint has inconsistent support for `system_instruction` compared to `generateContent`. Some models ignore it in streaming mode. This means personality system prompts may be silently dropped when using Gemini.
 
-### BUG-008: `_formatDate` Shows Inconsistent Format for Single-Digit Days
-
-**Severity:** Medium  
-**File:** `lib/screens/conversations_screen.dart` — line 134
+**Fix:** Prepend the system prompt as the first user message for Gemini:
 
 ```dart
-return '${date.day}/${date.month}';
-```
-
-This returns `3/5` for March 5th and `12/25` for December 25th. Inconsistent visual alignment.
-
-**Fix:**
-
-```dart
-return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}';
-```
-
----
-
-### BUG-009: Gemini Stream Parser Breaks on Complex JSON
-
-**Severity:** Medium  
-**File:** `lib/services/gemini_service.dart` — lines 93-99
-
-```dart
-String cleaned = line.trim();
-if (cleaned.endsWith(',')) cleaned = cleaned.substring(0, cleaned.length - 1);
-if (cleaned.startsWith('[')) cleaned = cleaned.substring(1);
-if (cleaned.endsWith(']')) cleaned = cleaned.substring(0, cleaned.length - 1);
-```
-
-This naive cleanup tries to handle the Gemini `streamGenerateContent` JSON array response line by line. But Gemini can return multi-line JSON objects or nested arrays. The current logic will:
-- Strip brackets from legitimate JSON values containing `[` or `]`
-- Fail on nested commas inside text content
-- Silently swallow parse errors (catch block on line 108 does nothing)
-
-**Fix:** Use a proper JSON streaming decoder or buffer lines until a complete JSON object is accumulated:
-
-```dart
-final buffer = StringBuffer();
-// Accumulate lines, try JSON decode when balanced braces found
-```
-
----
-
-### BUG-010: Chat Screen Rebuilds Entire List on Every Character
-
-**Severity:** Medium  
-**File:** `lib/providers/chat_provider.dart` — line 125, `lib/screens/chat_screen.dart` — line 53
-
-```dart
-// In provider: notifyListeners() on every streaming chunk
-await for (final chunk in apiService.sendMessage(...)) {
-  _streamingContent += chunk;
-  assistantMessage.content = _streamingContent;
-  notifyListeners(); // triggers full rebuild
+if (systemPrompt != null) {
+  contents.insert(0, {
+    'role': 'user',
+    'parts': [{'text': 'System instruction: $systemPrompt'}]
+  });
 }
 ```
 
-During streaming, `notifyListeners()` fires on every chunk (potentially 50-100+ times/second). The entire `ListView.builder` rebuilds each time. On older devices this causes jank.
+Or use `generateContent` instead of `streamGenerateContent` for personality support.
 
-**Fix:** Use a separate `ValueNotifier<String>` for streaming content, or implement a `ProxyProvider` / `select()` to avoid full tree rebuilds:
+---
+
+### BUG-019: `StreamingIndicator` Receives No Actual Data
+
+**Severity:** Medium  
+**File:** `lib/widgets/streaming_indicator.dart` vs `lib/screens/chat_screen.dart` (line 80)  
+**New in Tag 2**
+
+`StreamingIndicator` accepts optional `tokenCount` and `elapsedTime`:
 
 ```dart
-final _streamingNotifier = ValueNotifier<String>('');
-// Update _streamingNotifier.value on each chunk without full rebuild
+const StreamingIndicator()  // chat_screen.dart line 80 — no params
 ```
+
+The stream status bar shows "Streaming" text but never displays token count or elapsed time. The `ChatProvider` doesn't track either metric.
+
+**Fix:** Either:
+- Track tokens/elapsed in `ChatProvider` and pass them to `StreamingIndicator`
+- Or remove the unused parameters and status bar section
 
 ---
 
 ## 🟢 Low
 
-### BUG-011: Scroll-to-Bottom Fires on Every Build
+### BUG-020: `KaliPersonality.getById` — Silent Fallback on Invalid ID
 
 **Severity:** Low  
-**File:** `lib/screens/chat_screen.dart` — line 53
+**File:** `lib/models/kali_personality.dart` — line 93  
+**New in Tag 2**
 
 ```dart
-WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
+static KaliPersonality getById(String id) {
+  return all.firstWhere(
+    (p) => p.id == id,
+    orElse: () => defaultPersonality,
+  );
+}
 ```
 
-This is called inside `build()` of the `Consumer`, meaning it fires on **every provider notification** (including streaming chunks). Combined with the `Future.delayed(100ms)` in `_scrollToBottom`, this creates competing animations.
+If `_selectedPersonalityId` in SharedPreferences contains an invalid ID (e.g., after removing a personality from code, or data corruption), the app silently falls back to `defaultPersonality`. No warning, no log. The user sees "Kali — Default" in settings but doesn't know why.
 
-**Fix:** Move scroll logic to only trigger when message count changes:
+**Fix:** Log the fallback:
 
 ```dart
-int _prevMessageCount = 0;
-// In build: only scroll if count changed
-if (messages.length != _prevMessageCount) {
-  _prevMessageCount = messages.length;
-  WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
-}
+orElse: () {
+  debugPrint('Warning: Personality "$id" not found, using default');
+  return defaultPersonality;
+},
 ```
 
 ---
 
-### BUG-012: `HiveStorage.getConversation` — Untyped Key
+### BUG-021: `ArticleProvider` Created But Never Used in Widget Tree
 
 **Severity:** Low  
-**File:** `lib/storage/hive_storage.dart` — line 32
+**Files:** `lib/main.dart`, `lib/providers/article_provider.dart`  
+**Persisting from Tag 1**
 
-```dart
-Conversation? getConversation(String id) {
-  return _conversationBox.get(id); // Hive.get() returns dynamic
-}
+`ArticleProvider` is never registered in `MultiProvider` in `main.dart`. The `HomePage` and `ArticleDetailPage` call `context.read<ArticleProvider>()` which will throw:
+
+```
+ProviderNotFoundException: Could not find the correct Provider<ArticleProvider>
 ```
 
-`Hive.box.get(key)` returns `dynamic`. If the key doesn't match an existing entry's key exactly (e.g. type mismatch), it returns `null` silently. No type safety guarantee.
+These pages are unreachable from the current route table, but if someone adds them to routes, it crashes immediately.
 
-**Fix:** Use typed access:
-
-```dart
-Conversation? getConversation(String id) {
-  return _conversationBox.get(id) as Conversation?;
-}
-```
+**Fix:** Either add `ArticleProvider` to `MultiProvider` or remove the article system entirely.
 
 ---
 
-### BUG-013: No Input Validation on Empty API Key
+### BUG-022: Personality System Prompt Sent in Full on Every Message
 
 **Severity:** Low  
-**File:** `lib/providers/settings_provider.dart` — line 49
+**File:** `lib/providers/chat_provider.dart` — line 128  
+**New in Tag 2**
 
-```dart
-String get currentApiKey {
-  switch (_selectedProvider) {
-    case 'claude': return _claudeApiKey;
-    case 'gemini': return _geminiApiKey;
-    default: return _openaiApiKey;
-  }
-}
-```
+The full personality system prompt (up to ~300 words for "chaos" mode) is sent as the `system` parameter on **every single API call**. Combined with the full conversation history, this wastes tokens on every request. For Claude, the system prompt is billed separately but still counts toward context limits.
 
-If the user sends a message without configuring an API key, `currentApiKey` returns `''`. The API service then makes a request with an empty `Authorization` header, resulting in a confusing `401` or `403` error.
+For a 50-message conversation, the same system prompt is sent 25 times.
 
-**Fix:** Add validation in `ChatProvider.sendMessage()`:
-
-```dart
-if (!_settingsProvider.isConfigured) {
-  _errorMessage = 'Please configure an API key in Settings';
-  _state = ChatState.error;
-  notifyListeners();
-  return;
-}
-```
+**Fix:** Cache the system prompt string and only resend if personality changes. Or use conversation-level system prompt injection (Claude supports this via `conversation` parameter in newer API versions).
 
 ---
 
 ## Recommendations
 
-1. **Immediate:** Fix BUG-001 (route crash) and BUG-002 (Hive conflict) — these crash the app.
-2. **Soon:** Fix BUG-003 (null safety) and BUG-004 (notifyListeners timing).
-3. **Cleanup:** Delete `storage_service.dart` (dead code), consolidate `HiveStorage` patterns.
-4. **Performance:** Consider debouncing `notifyListeners()` during streaming (BUG-010).
+### Immediate (Before Day 3)
+1. **BUG-014:** Fix `initialValue` → `value` — will crash on current Flutter
+2. **BUG-015:** Extract `KaliColors` to shared file — prevents future color drift
+3. **BUG-017:** Add `personalityId` to `Conversation` — needs Hive migration
+
+### Soon
+4. **BUG-001/021:** Remove dead article code or properly integrate it
+5. **BUG-005:** Add `dispose()` to services or use shared client
+6. **BUG-016:** Wire up ChatBubble metadata or remove dead code
+
+### Cleanup
+7. **BUG-019:** Wire up StreamingIndicator or simplify
+8. **BUG-020:** Add debug logging for personality fallback
+9. **BUG-022:** Optimize system prompt usage
