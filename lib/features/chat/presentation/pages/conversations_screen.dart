@@ -1,9 +1,13 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../../providers/chat_provider.dart';
 import '../../../../../providers/settings_provider.dart';
+import '../../../../../theme/kali_colors.dart';
+import '../../../../../theme/kali_text_styles.dart';
 import '../widgets/conversation_list_item.dart';
 import '../widgets/conversation_list_skeleton.dart';
 
@@ -15,11 +19,21 @@ class ConversationsScreen extends StatefulWidget {
 }
 
 class _ConversationsScreenState extends State<ConversationsScreen> {
+  static const _kaliEmptyMessages = [
+    'Noch da. Warte auf deine erste Frage.',
+    'Stille. Entweder du denkst oder du schreibst.',
+    'Nichts hier. Fang an.',
+    'Die Leere antwortet schneller als du denkst.',
+    'Keine Gespräche. Noch.',
+  ];
+
+  late final String _emptyMessage;
   bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
+    _emptyMessage = _kaliEmptyMessages[Random().nextInt(_kaliEmptyMessages.length)];
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await context.read<ChatProvider>().loadConversations();
       if (mounted) setState(() => _isLoading = false);
@@ -64,33 +78,20 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.chat_outlined,
-                    size: 64,
-                    color: Theme.of(context)
-                        .colorScheme
-                        .primary
-                        .withValues(alpha: 0.3),
-                  ),
-                  const SizedBox(height: 16),
                   Text(
-                    'No conversations yet',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .onSurface
-                              .withValues(alpha: 0.5),
-                        ),
+                    'KALI',
+                    style: KaliTextStyles.headline.copyWith(
+                      color: KaliColors.accentPrimary,
+                      letterSpacing: 4,
+                    ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 24),
                   Text(
-                    'Tap + to start a new chat',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .onSurface
-                              .withValues(alpha: 0.4),
-                        ),
+                    _emptyMessage,
+                    style: KaliTextStyles.body.copyWith(
+                      color: KaliColors.textSecondary,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
                 ],
               ),
