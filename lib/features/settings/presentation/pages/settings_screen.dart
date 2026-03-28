@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../../providers/settings_provider.dart';
 import '../../../../../models/kali_personality.dart';
+import '../../../../../theme/kali_colors.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -130,6 +132,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 controller: _geminiController,
                 onChanged: settings.setGeminiApiKey,
                 obscured: true,
+              ),
+              const SizedBox(height: 24),
+              const Divider(),
+              const SizedBox(height: 16),
+              Text(
+                'Memory & Privacy',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              const SizedBox(height: 8),
+              ListTile(
+                leading: const Icon(Icons.psychology, color: KaliColors.accentPrimary),
+                title: const Text('Memory Einstellungen'),
+                subtitle: const Text('Fact-Extraction, Datenschutz, gespeicherte Fakten'),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => context.push('/settings/memory'),
               ),
             ],
           );

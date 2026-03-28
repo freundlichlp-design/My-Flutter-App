@@ -14,6 +14,8 @@ import '../../features/settings/domain/entities/api_key_config.dart';
 import '../../features/settings/domain/entities/personality.dart';
 import '../../features/settings/domain/entities/provider_config.dart';
 import '../../services/emotion_engine.dart';
+import '../../services/fact_extractor.dart';
+import '../../storage/memory_storage.dart';
 
 enum ChatState { idle, streaming, error }
 
@@ -125,8 +127,9 @@ class ChatProvider extends ChangeNotifier {
     required ApiKeyConfigEntity apiKeys,
     required ProviderConfigEntity providerConfig,
     required PersonalityEntity personality,
+    String? imagePath,
   }) async {
-    if (content.trim().isEmpty) return;
+    if (content.trim().isEmpty && imagePath == null) return;
 
     if (content.length > 10000) {
       _errorMessage = 'Message too long. Maximum is 10000 characters.';
@@ -168,8 +171,24 @@ class ChatProvider extends ChangeNotifier {
         notifyListeners();
       },
       (userMessage) async {
-        _messages.add(userMessage);
+        if (imagePath != null) {
+          final imageMessage = MessageEntity(
+            id: userMessage.id,
+            conversationId: userMessage.conversationId,
+            role: userMessage.role,
+            content: userMessage.content,
+            timestamp: userMessage.timestamp,
+            tokens: userMessage.tokens,
+            imagePath: imagePath,
+          );
+          _messages.add(imageMessage);
+        } else {
+          _messages.add(userMessage);
+        }
         notifyListeners();
+
+        // Auto-extract facts from user message
+        _extractAndStoreFacts(content, conversation.id);
 
         if (_messages.length == 1) {
           final updatedConv = ConversationEntity(
@@ -208,7 +227,20 @@ class ChatProvider extends ChangeNotifier {
 
           final emotionContext = EmotionEngine.analyze(messagesForApi);
           final emotionalPrompt = EmotionEngine.buildEmotionalContext(emotionContext);
+
           String systemPrompt = personality.systemPrompt;
+
+          // Add memory context
+          final memoryStorage = MemoryStorage();
+          final privacySettings = memoryStorage.getPrivacySettings();
+          if (privacySettings.memoryEnabled) {
+            final memories = memoryStorage.getPublicMemories();
+            final memoryContext = FactExtractor.buildMemoryContext(memories);
+            if (memoryContext.isNotEmpty) {
+              systemPrompt = '$systemPrompt\n\n$memoryContext';
+            }
+          }
+
           if (emotionalPrompt.isNotEmpty) {
             systemPrompt = '$systemPrompt\n\n$emotionalPrompt';
           }
@@ -266,6 +298,23 @@ class ChatProvider extends ChangeNotifier {
         notifyListeners();
       },
     );
+  }
+
+  void _extractAndStoreFacts(String content, String conversationId) {
+    final memoryStorage = MemoryStorage();
+    final privacySettings = memoryStorage.getPrivacySettings();
+    if (!privacySettings.memoryEnabled) return;
+
+    final facts = FactExtractor.extractFacts(
+      messageContent: content,
+      conversationId: conversationId,
+      privacySettings: privacySettings,
+    );
+
+    if (facts.isNotEmpty) {
+      memoryStorage.saveMemories(facts);
+      memoryStorage.enforceMemoryLimit(privacySettings.maxMemoryEntries);
+    }
   }
 
   void clearError() {

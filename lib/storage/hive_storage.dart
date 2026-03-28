@@ -2,6 +2,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 import '../models/conversation.dart';
 import '../models/message.dart';
+import 'memory_storage.dart';
 
 class HiveStorage {
   static const String conversationsBox = 'conversations';
@@ -23,6 +24,7 @@ class HiveStorage {
     }
     await Hive.openBox<Conversation>(conversationsBox);
     await Hive.openBox<Message>(messagesBox);
+    await MemoryStorage.init();
   }
 
   Box<Conversation> get _conversationBox =>

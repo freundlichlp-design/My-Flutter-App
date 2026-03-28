@@ -4,14 +4,18 @@ import '../../../../theme/kali_colors.dart';
 import '../../../../theme/kali_radius.dart';
 import '../../../../theme/kali_spacing.dart';
 import '../../../../theme/kali_text_styles.dart';
+import 'voice_input_button.dart';
+import 'image_picker_button.dart';
 
 class MessageInput extends StatefulWidget {
   final ValueChanged<String> onSend;
+  final ValueChanged<String>? onImageSelected;
   final bool enabled;
 
   const MessageInput({
     super.key,
     required this.onSend,
+    this.onImageSelected,
     this.enabled = true,
   });
 
@@ -49,6 +53,14 @@ class _MessageInputState extends State<MessageInput> {
     }
   }
 
+  void _handleVoiceText(String text) {
+    _controller.text = text;
+    _controller.selection = TextSelection.fromPosition(
+      TextPosition(offset: text.length),
+    );
+    _focusNode.requestFocus();
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -62,6 +74,14 @@ class _MessageInputState extends State<MessageInput> {
         ),
         child: Row(
           children: [
+            // Image Picker Button
+            if (widget.onImageSelected != null) ...[
+              ImagePickerButton(
+                onImageSelected: widget.onImageSelected!,
+                enabled: widget.enabled,
+              ),
+              SizedBox(width: KaliSpacing.xs),
+            ],
             // Input Field
             Expanded(
               child: Container(
@@ -99,7 +119,13 @@ class _MessageInputState extends State<MessageInput> {
                 ),
               ),
             ),
-            SizedBox(width: KaliSpacing.sm),
+            SizedBox(width: KaliSpacing.xs),
+            // Voice Input Button
+            VoiceInputButton(
+              onTextRecognized: _handleVoiceText,
+              enabled: widget.enabled,
+            ),
+            SizedBox(width: KaliSpacing.xs),
             // Send Button - Circle, 40px, accentPrimary bg
             Container(
               width: 40,

@@ -22,6 +22,9 @@ class Message extends HiveObject {
   @HiveField(5)
   final int? tokens;
 
+  @HiveField(6)
+  final String? imagePath;
+
   Message({
     required this.id,
     required this.conversationId,
@@ -29,6 +32,7 @@ class Message extends HiveObject {
     required this.content,
     required this.timestamp,
     this.tokens,
+    this.imagePath,
   });
 
   factory Message.fromJson(Map<String, dynamic> json) {
@@ -39,6 +43,7 @@ class Message extends HiveObject {
       content: json['content'] as String,
       timestamp: DateTime.parse(json['timestamp'] as String),
       tokens: json['tokens'] as int?,
+      imagePath: json['imagePath'] as String?,
     );
   }
 
@@ -50,6 +55,7 @@ class Message extends HiveObject {
       'content': content,
       'timestamp': timestamp.toIso8601String(),
       'tokens': tokens,
+      'imagePath': imagePath,
     };
   }
 

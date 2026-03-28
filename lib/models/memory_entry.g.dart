@@ -1,50 +1,47 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'message.dart';
+part of 'memory_entry.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class MessageAdapter extends TypeAdapter<Message> {
+class MemoryEntryAdapter extends TypeAdapter<MemoryEntry> {
   @override
-  final int typeId = 1;
+  final int typeId = 2;
 
   @override
-  Message read(BinaryReader reader) {
+  MemoryEntry read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return Message(
+    return MemoryEntry(
       id: fields[0] as String,
-      conversationId: fields[1] as String,
-      role: fields[2] as String,
-      content: fields[3] as String,
-      timestamp: fields[4] as DateTime,
-      tokens: fields[5] as int?,
-      imagePath: fields[6] as String?,
+      fact: fields[1] as String,
+      category: fields[2] as String,
+      sourceConversationId: fields[3] as String,
+      extractedAt: fields[4] as DateTime,
+      isPrivate: fields[5] as bool? ?? false,
     );
   }
 
   @override
-  void write(BinaryWriter writer, Message obj) {
+  void write(BinaryWriter writer, MemoryEntry obj) {
     writer
-      ..writeByte(7)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
-      ..write(obj.conversationId)
+      ..write(obj.fact)
       ..writeByte(2)
-      ..write(obj.role)
+      ..write(obj.category)
       ..writeByte(3)
-      ..write(obj.content)
+      ..write(obj.sourceConversationId)
       ..writeByte(4)
-      ..write(obj.timestamp)
+      ..write(obj.extractedAt)
       ..writeByte(5)
-      ..write(obj.tokens)
-      ..writeByte(6)
-      ..write(obj.imagePath);
+      ..write(obj.isPrivate);
   }
 
   @override
@@ -53,7 +50,7 @@ class MessageAdapter extends TypeAdapter<Message> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is MessageAdapter &&
+      other is MemoryEntryAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

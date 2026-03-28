@@ -25,14 +25,17 @@ import '../../features/settings/domain/usecases/settings_get_api_key.dart';
 import '../../features/settings/domain/usecases/update_provider_config.dart';
 import '../../providers/article_provider.dart';
 import '../../providers/chat_provider.dart';
+import '../../providers/memory_provider.dart';
 import '../../providers/settings_provider.dart';
 import '../../storage/hive_storage.dart';
+import '../../storage/memory_storage.dart';
 
 final sl = GetIt.instance;
 
 Future<void> initDependencies() async {
   // Storage
   sl.registerSingleton<HiveStorage>(HiveStorage());
+  sl.registerSingleton<MemoryStorage>(MemoryStorage());
 
   // Datasources (concrete implementations bound to abstract types)
   sl.registerLazySingleton<ChatLocalDatasource>(
@@ -110,5 +113,9 @@ Future<void> initDependencies() async {
       fetchArticles: sl<FetchArticles>(),
       fetchArticleDetail: sl<FetchArticleDetail>(),
     ),
+  );
+
+  sl.registerLazySingleton<MemoryProvider>(
+    () => MemoryProvider(),
   );
 }

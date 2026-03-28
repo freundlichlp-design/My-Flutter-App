@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 
@@ -23,40 +25,43 @@ class ChatBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isUser = message.isUser;
+    final hasImage = message.hasImage;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: KaliSpacing.xxs),
       child: Column(
         crossAxisAlignment: isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children: [
-          Align(
-            alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
-            child: Container(
-              constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width * 0.85,
-              ),
-              padding: const EdgeInsets.symmetric(
-                vertical: KaliSpacing.md,
-                horizontal: KaliSpacing.md,
-              ),
-              decoration: BoxDecoration(
-                color: isUser ? KaliColors.bubbleUser : KaliColors.bubbleAi,
-                borderRadius: isUser ? KaliRadius.bubbleUser : KaliRadius.bubbleAi,
-                border: isUser ? null : Border.all(
-                  color: KaliColors.bubbleAiBorder,
-                  width: 1,
+          if (hasImage) _ImageAttachment(imagePath: message.imagePath!, isUser: isUser),
+          if (message.content.isNotEmpty)
+            Align(
+              alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
+              child: Container(
+                constraints: BoxConstraints(
+                  maxWidth: MediaQuery.of(context).size.width * 0.85,
                 ),
+                padding: const EdgeInsets.symmetric(
+                  vertical: KaliSpacing.md,
+                  horizontal: KaliSpacing.md,
+                ),
+                decoration: BoxDecoration(
+                  color: isUser ? KaliColors.bubbleUser : KaliColors.bubbleAi,
+                  borderRadius: isUser ? KaliRadius.bubbleUser : KaliRadius.bubbleAi,
+                  border: isUser ? null : Border.all(
+                    color: KaliColors.bubbleAiBorder,
+                    width: 1,
+                  ),
+                ),
+                child: isUser
+                    ? Text(
+                        message.content,
+                        style: KaliTextStyles.body.copyWith(
+                          color: KaliColors.bubbleUserText,
+                        ),
+                      )
+                    : _FormattedMessage(content: message.content),
               ),
-              child: isUser
-                  ? Text(
-                      message.content,
-                      style: KaliTextStyles.body.copyWith(
-                        color: KaliColors.bubbleUserText,
-                      ),
-                    )
-                  : _FormattedMessage(content: message.content),
             ),
-          ),
           // Metadata for AI messages
           if (!isUser && (model != null || tokenCount != null))
             Padding(
@@ -174,4 +179,55 @@ class _ContentSegment {
   _ContentSegment.codeBlock(this.code, this.language)
       : text = '',
         isCode = true;
+}
+
+class _ImageAttachment extends StatelessWidget {
+  final String imagePath;
+  final bool isUser;
+
+  const _ImageAttachment({required this.imagePath, required this.isUser});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: KaliSpacing.xs),
+      child: Align(
+        alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
+        child: Container(
+          constraints: BoxConstraints(
+            maxWidth: MediaQuery.of(context).size.width * 0.7,
+            maxHeight: 300,
+          ),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(KaliRadius.lg),
+            border: isUser
+                ? null
+                : Border.all(color: KaliColors.bubbleAiBorder, width: 1),
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(KaliRadius.lg),
+            child: Image.file(
+              File(imagePath),
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) => Container(
+                width: 200,
+                height: 150,
+                color: KaliColors.bgTertiary,
+                child: const Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.broken_image, color: KaliColors.textMuted, size: 48),
+                    SizedBox(height: 8),
+                    Text('Bild konnte nicht geladen werden',
+                        style: TextStyle(color: KaliColors.textMuted, fontSize: 12)),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }

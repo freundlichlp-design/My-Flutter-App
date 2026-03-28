@@ -125,6 +125,13 @@ class _ChatScreenState extends State<ChatScreen> {
                       providerConfig: settings.providerConfig,
                       personality: settings.selectedPersonality,
                     ),
+                    onImageSelected: (imagePath) => provider.sendMessage(
+                      '',
+                      apiKeys: settings.apiKeys,
+                      providerConfig: settings.providerConfig,
+                      personality: settings.selectedPersonality,
+                      imagePath: imagePath,
+                    ),
                     enabled: !provider.isStreaming,
                   );
                 },

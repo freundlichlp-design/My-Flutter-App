@@ -141,6 +141,7 @@ class ChatRepositoryImpl implements ChatRepository {
       content: model.content,
       timestamp: model.timestamp,
       tokens: model.tokens,
+      imagePath: model.imagePath,
     );
   }
 
@@ -152,6 +153,7 @@ class ChatRepositoryImpl implements ChatRepository {
       content: entity.content,
       timestamp: entity.timestamp,
       tokens: entity.tokens,
+      imagePath: entity.imagePath,
     );
   }
 }
