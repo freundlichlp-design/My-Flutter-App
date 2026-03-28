@@ -8,7 +8,7 @@ import '../../features/chat/domain/entities/message.dart';
 import '../../features/chat/domain/usecases/create_conversation.dart';
 import '../../features/chat/domain/usecases/delete_conversation.dart';
 import '../../features/chat/domain/usecases/load_conversations.dart';
-import '../../features/chat/domain/usecases/send_message.dart';
+import '../../features/chat/domain/usecases/chat_send_message.dart';
 import '../../features/chat/domain/usecases/stream_response.dart';
 import '../../features/settings/domain/entities/api_key_config.dart';
 import '../../features/settings/domain/entities/personality.dart';
@@ -21,7 +21,7 @@ class ChatProvider extends ChangeNotifier {
   final LoadConversations _loadConversations;
   final CreateConversation _createConversation;
   final DeleteConversation _deleteConversation;
-  final SendMessage _sendMessage;
+  final ChatSendMessage _sendMessage;
   final StreamResponse _streamResponse;
 
   static const _uuid = Uuid();
@@ -30,7 +30,7 @@ class ChatProvider extends ChangeNotifier {
     required LoadConversations loadConversations,
     required CreateConversation createConversation,
     required DeleteConversation deleteConversation,
-    required SendMessage sendMessage,
+    required ChatSendMessage sendMessage,
     required StreamResponse streamResponse,
   })  : _loadConversations = loadConversations,
         _createConversation = createConversation,

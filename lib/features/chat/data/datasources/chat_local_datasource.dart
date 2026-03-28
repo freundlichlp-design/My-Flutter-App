@@ -3,7 +3,17 @@ import 'package:hive_flutter/hive_flutter.dart';
 import '../../../../models/conversation.dart';
 import '../../../../models/message.dart';
 
-class ChatLocalDatasource {
+abstract class ChatLocalDatasource {
+  List<Conversation> getAllConversations();
+  Conversation? getConversation(String id);
+  Future<void> saveConversation(Conversation conversation);
+  Future<void> deleteConversation(String id);
+  List<Message> getMessagesForConversation(String conversationId);
+  Future<void> saveMessage(Message message);
+  Future<void> clearAll();
+}
+
+class ChatLocalDatasourceImpl implements ChatLocalDatasource {
   static const String conversationsBox = 'conversations';
   static const String messagesBox = 'messages';
 
@@ -12,20 +22,24 @@ class ChatLocalDatasource {
 
   Box<Message> get _messageBox => Hive.box<Message>(messagesBox);
 
+  @override
   List<Conversation> getAllConversations() {
     final list = _conversationBox.values.toList();
     list.sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
     return list;
   }
 
+  @override
   Conversation? getConversation(String id) {
     return _conversationBox.get(id);
   }
 
+  @override
   Future<void> saveConversation(Conversation conversation) async {
     await _conversationBox.put(conversation.id, conversation);
   }
 
+  @override
   Future<void> deleteConversation(String id) async {
     final messagesToDelete = _messageBox.values
         .where((m) => m.conversationId == id)
@@ -36,6 +50,7 @@ class ChatLocalDatasource {
     await _conversationBox.delete(id);
   }
 
+  @override
   List<Message> getMessagesForConversation(String conversationId) {
     final list = _messageBox.values
         .where((m) => m.conversationId == conversationId)
@@ -44,10 +59,12 @@ class ChatLocalDatasource {
     return list;
   }
 
+  @override
   Future<void> saveMessage(Message message) async {
     await _messageBox.put(message.id, message);
   }
 
+  @override
   Future<void> clearAll() async {
     await _conversationBox.clear();
     await _messageBox.clear();

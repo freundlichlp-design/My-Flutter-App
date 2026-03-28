@@ -6,7 +6,17 @@ import '../../../../services/claude_service.dart';
 import '../../../../services/gemini_service.dart';
 import '../../../../services/openai_service.dart';
 
-class ChatRemoteDatasource {
+abstract class ChatRemoteDatasource {
+  Stream<String> sendMessage({
+    required List<Message> history,
+    required String provider,
+    required String apiKey,
+    required String model,
+    String? systemPrompt,
+  });
+}
+
+class ChatRemoteDatasourceImpl implements ChatRemoteDatasource {
   AiApiService _createService({
     required String provider,
     required String apiKey,
@@ -22,6 +32,7 @@ class ChatRemoteDatasource {
     }
   }
 
+  @override
   Stream<String> sendMessage({
     required List<Message> history,
     required String provider,
