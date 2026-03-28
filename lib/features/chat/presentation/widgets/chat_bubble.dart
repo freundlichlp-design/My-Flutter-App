@@ -3,6 +3,9 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 
 import '../../domain/entities/message.dart';
 import '../../../../theme/kali_colors.dart';
+import '../../../../theme/kali_radius.dart';
+import '../../../../theme/kali_spacing.dart';
+import '../../../../theme/kali_text_styles.dart';
 import 'code_block.dart';
 
 class ChatBubble extends StatelessWidget {
@@ -22,7 +25,7 @@ class ChatBubble extends StatelessWidget {
     final isUser = message.isUser;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2),
+      padding: const EdgeInsets.symmetric(vertical: KaliSpacing.xxs),
       child: Column(
         crossAxisAlignment: isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children: [
@@ -32,15 +35,13 @@ class ChatBubble extends StatelessWidget {
               constraints: BoxConstraints(
                 maxWidth: MediaQuery.of(context).size.width * 0.85,
               ),
-              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+              padding: const EdgeInsets.symmetric(
+                vertical: KaliSpacing.md,
+                horizontal: KaliSpacing.md,
+              ),
               decoration: BoxDecoration(
                 color: isUser ? KaliColors.bubbleUser : KaliColors.bubbleAi,
-                borderRadius: BorderRadius.only(
-                  topLeft: const Radius.circular(18),
-                  topRight: const Radius.circular(18),
-                  bottomLeft: Radius.circular(isUser ? 18 : 4),
-                  bottomRight: Radius.circular(isUser ? 4 : 18),
-                ),
+                borderRadius: isUser ? KaliRadius.bubbleUser : KaliRadius.bubbleAi,
                 border: isUser ? null : Border.all(
                   color: KaliColors.bubbleAiBorder,
                   width: 1,
@@ -49,11 +50,8 @@ class ChatBubble extends StatelessWidget {
               child: isUser
                   ? Text(
                       message.content,
-                      style: const TextStyle(
+                      style: KaliTextStyles.body.copyWith(
                         color: KaliColors.bubbleUserText,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w400,
-                        height: 1.5,
                       ),
                     )
                   : _FormattedMessage(content: message.content),
@@ -62,14 +60,14 @@ class ChatBubble extends StatelessWidget {
           // Metadata for AI messages
           if (!isUser && (model != null || tokenCount != null))
             Padding(
-              padding: const EdgeInsets.only(top: 4, left: 4, right: 4),
+              padding: const EdgeInsets.only(
+                top: KaliSpacing.xs,
+                left: KaliSpacing.xs,
+                right: KaliSpacing.xs,
+              ),
               child: Text(
                 _buildMetadata(),
-                style: const TextStyle(
-                  color: KaliColors.textSecondary,
-                  fontSize: 12,
-                  height: 1.4,
-                ),
+                style: KaliTextStyles.caption,
               ),
             ),
         ],
@@ -107,39 +105,15 @@ class _FormattedMessage extends StatelessWidget {
           data: segment.text,
           selectable: true,
           styleSheet: MarkdownStyleSheet(
-            p: const TextStyle(
-              color: KaliColors.bubbleAiText,
-              fontSize: 15,
-              fontWeight: FontWeight.w400,
-              height: 1.5,
-            ),
-            h1: const TextStyle(
-              color: KaliColors.textPrimary,
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-            ),
-            h2: const TextStyle(
-              color: KaliColors.textPrimary,
-              fontSize: 17,
-              fontWeight: FontWeight.w600,
-            ),
-            h3: const TextStyle(
-              color: KaliColors.textPrimary,
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-            ),
-            strong: const TextStyle(
-              color: KaliColors.textPrimary,
-              fontWeight: FontWeight.w600,
-            ),
-            code: const TextStyle(
-              backgroundColor: KaliColors.bgPrimary,
-              fontFamily: 'monospace',
-              fontSize: 13,
-            ),
+            p: KaliTextStyles.body.copyWith(color: KaliColors.bubbleAiText),
+            h1: KaliTextStyles.subtitle,
+            h2: KaliTextStyles.subtitle.copyWith(fontSize: 17),
+            h3: KaliTextStyles.subtitle.copyWith(fontSize: 16),
+            strong: KaliTextStyles.bodyBold,
+            code: KaliTextStyles.code,
             codeblockDecoration: BoxDecoration(
               color: KaliColors.bgPrimary,
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: KaliRadius.codeBlock,
             ),
             a: const TextStyle(
               color: KaliColors.accentPrimary,

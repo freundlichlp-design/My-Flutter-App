@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../../../../theme/kali_colors.dart';
+import '../../../../theme/kali_radius.dart';
+import '../../../../theme/kali_spacing.dart';
+import '../../../../theme/kali_durations.dart';
 
 class ConversationListSkeleton extends StatefulWidget {
   final int itemCount;
@@ -25,11 +28,11 @@ class _ConversationListSkeletonState extends State<ConversationListSkeleton>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1500),
+      duration: KaliDurations.skeleton,
     )..repeat();
     _animation = CurvedAnimation(
       parent: _controller,
-      curve: Curves.easeInOut,
+      curve: KaliCurves.cursorBlink,
     );
   }
 
@@ -70,7 +73,7 @@ class _SkeletonItem extends StatelessWidget {
 
     return Container(
       height: 72,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: KaliSpacing.paddingScreenH,
       decoration: const BoxDecoration(
         color: KaliColors.bgSecondary,
         border: Border(
@@ -87,7 +90,7 @@ class _SkeletonItem extends StatelessWidget {
               color: shimmerColor,
             ),
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: KaliSpacing.md),
           Expanded(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -97,16 +100,16 @@ class _SkeletonItem extends StatelessWidget {
                   height: 16,
                   width: 180,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(KaliRadius.md),
                     color: shimmerColor,
                   ),
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: KaliSpacing.sm),
                 Container(
                   height: 12,
                   width: 120,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(KaliRadius.md),
                     color: shimmerColor,
                   ),
                 ),

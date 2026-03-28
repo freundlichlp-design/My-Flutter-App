@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../../../../theme/kali_colors.dart';
+import '../../../../theme/kali_radius.dart';
+import '../../../../theme/kali_spacing.dart';
+import '../../../../theme/kali_durations.dart';
+import '../../../../theme/kali_text_styles.dart';
 
 class StreamingIndicator extends StatefulWidget {
   final int? tokenCount;
@@ -23,10 +27,10 @@ class _StreamingIndicatorState extends State<StreamingIndicator>
   @override
   void initState() {
     super.initState();
-    // Blinking cursor animation - 500ms as per STYLE_GUIDE
+    // Blinking cursor animation
     _cursorController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 500),
+      duration: KaliDurations.cursor,
     )..repeat(reverse: true);
   }
 
@@ -39,7 +43,7 @@ class _StreamingIndicatorState extends State<StreamingIndicator>
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2),
+      padding: const EdgeInsets.symmetric(vertical: KaliSpacing.xxs),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -47,15 +51,13 @@ class _StreamingIndicatorState extends State<StreamingIndicator>
           Align(
             alignment: Alignment.centerLeft,
             child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+              padding: const EdgeInsets.symmetric(
+                vertical: KaliSpacing.md,
+                horizontal: KaliSpacing.md,
+              ),
               decoration: BoxDecoration(
                 color: KaliColors.bgTertiary,
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(18),
-                  topRight: Radius.circular(18),
-                  bottomRight: Radius.circular(18),
-                  bottomLeft: Radius.circular(4),
-                ),
+                borderRadius: KaliRadius.bubbleAi,
                 border: Border.all(
                   color: KaliColors.borderColor,
                   width: 1,
@@ -64,18 +66,16 @@ class _StreamingIndicatorState extends State<StreamingIndicator>
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // Blinking cursor █ (Option A from STYLE_GUIDE)
+                  // Blinking cursor █
                   AnimatedBuilder(
                     animation: _cursorController,
                     builder: (context, child) {
                       return Opacity(
                         opacity: _cursorController.value,
-                        child: const Text(
+                        child: Text(
                           '█',
-                          style: TextStyle(
+                          style: KaliTextStyles.body.copyWith(
                             color: KaliColors.accentPrimary,
-                            fontSize: 15,
-                            height: 1.5,
                           ),
                         ),
                       );
@@ -85,10 +85,16 @@ class _StreamingIndicatorState extends State<StreamingIndicator>
               ),
             ),
           ),
-          // Stream Status Bar (as per STYLE_GUIDE section 5)
+          // Stream Status Bar
           Container(
-            margin: const EdgeInsets.only(top: 4, left: 4),
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            margin: const EdgeInsets.only(
+              top: KaliSpacing.xs,
+              left: KaliSpacing.xs,
+            ),
+            padding: const EdgeInsets.symmetric(
+              horizontal: KaliSpacing.sm,
+              vertical: KaliSpacing.xs,
+            ),
             decoration: const BoxDecoration(
               color: KaliColors.bgTertiary,
               border: Border(
@@ -100,38 +106,29 @@ class _StreamingIndicatorState extends State<StreamingIndicator>
               children: [
                 // Pulsing dot
                 _PulsingDot(),
-                const SizedBox(width: 6),
-                const Text(
+                SizedBox(width: KaliSpacing.sm),
+                Text(
                   'Streaming',
-                  style: TextStyle(
-                    color: KaliColors.textSecondary,
-                    fontSize: 12,
-                  ),
+                  style: KaliTextStyles.caption,
                 ),
                 if (widget.tokenCount != null) ...[
-                  const Text(
+                  Text(
                     ' · ',
-                    style: TextStyle(color: KaliColors.textSecondary),
+                    style: KaliTextStyles.caption,
                   ),
                   Text(
                     '${widget.tokenCount} tokens',
-                    style: const TextStyle(
-                      color: KaliColors.textSecondary,
-                      fontSize: 12,
-                    ),
+                    style: KaliTextStyles.caption,
                   ),
                 ],
                 if (widget.elapsedTime != null) ...[
-                  const Text(
+                  Text(
                     ' · ',
-                    style: TextStyle(color: KaliColors.textSecondary),
+                    style: KaliTextStyles.caption,
                   ),
                   Text(
                     '${widget.elapsedTime!.inMilliseconds / 1000.0}s',
-                    style: const TextStyle(
-                      color: KaliColors.textSecondary,
-                      fontSize: 12,
-                    ),
+                    style: KaliTextStyles.caption,
                   ),
                 ],
               ],
@@ -143,7 +140,7 @@ class _StreamingIndicatorState extends State<StreamingIndicator>
   }
 }
 
-/// Pulsing dot animation - 800ms loop as per STYLE_GUIDE
+/// Pulsing dot animation
 class _PulsingDot extends StatefulWidget {
   const _PulsingDot();
 
@@ -160,7 +157,7 @@ class _PulsingDotState extends State<_PulsingDot>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 800),
+      duration: KaliDurations.pulsing,
     )..repeat(reverse: true);
   }
 
@@ -176,8 +173,8 @@ class _PulsingDotState extends State<_PulsingDot>
       animation: _controller,
       builder: (context, child) {
         return Container(
-          width: 8,
-          height: 8,
+          width: KaliSpacing.sm,
+          height: KaliSpacing.sm,
           decoration: BoxDecoration(
             color: KaliColors.accentSuccess.withValues(
               alpha: 0.5 + _controller.value * 0.5,

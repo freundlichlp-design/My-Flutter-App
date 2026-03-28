@@ -3,6 +3,10 @@ import 'package:flutter/services.dart';
 
 import '../../domain/entities/conversation.dart';
 import '../../../../theme/kali_colors.dart';
+import '../../../../theme/kali_radius.dart';
+import '../../../../theme/kali_spacing.dart';
+import '../../../../theme/kali_durations.dart';
+import '../../../../theme/kali_text_styles.dart';
 
 class ConversationListItem extends StatelessWidget {
   final ConversationEntity conversation;
@@ -48,36 +52,29 @@ class ConversationListItem extends StatelessWidget {
             builder: (ctx) => AlertDialog(
               backgroundColor: KaliColors.bgTertiary,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: KaliRadius.card,
               ),
-              title: const Text(
+              title: Text(
                 'Delete conversation?',
-                style: TextStyle(
-                  color: KaliColors.textPrimary,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: KaliTextStyles.subtitle,
               ),
               content: Text(
                 '"${conversation.title}" will be permanently deleted.',
-                style: const TextStyle(
-                  color: KaliColors.textSecondary,
-                  fontSize: 15,
-                ),
+                style: KaliTextStyles.body,
               ),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(ctx).pop(false),
-                  child: const Text(
+                  child: Text(
                     'Cancel',
-                    style: TextStyle(color: KaliColors.textSecondary),
+                    style: KaliTextStyles.caption,
                   ),
                 ),
                 TextButton(
                   onPressed: () => Navigator.of(ctx).pop(true),
-                  child: const Text(
+                  child: Text(
                     'Delete',
-                    style: TextStyle(color: KaliColors.accentDanger),
+                    style: KaliTextStyles.caption.copyWith(color: KaliColors.accentDanger),
                   ),
                 ),
               ],
@@ -95,7 +92,7 @@ class ConversationListItem extends StatelessWidget {
       },
       background: Container(
         alignment: Alignment.centerLeft,
-        padding: const EdgeInsets.only(left: 24),
+        padding: const EdgeInsets.only(left: KaliSpacing.lg),
         color: KaliColors.accentPrimary.withValues(alpha: 0.125),
         child: const Icon(
           Icons.archive_outlined,
@@ -105,7 +102,7 @@ class ConversationListItem extends StatelessWidget {
       ),
       secondaryBackground: Container(
         alignment: Alignment.centerRight,
-        padding: const EdgeInsets.only(right: 24),
+        padding: const EdgeInsets.only(right: KaliSpacing.lg),
         color: KaliColors.accentDanger.withValues(alpha: 0.125),
         child: const Icon(
           Icons.delete_outline,
@@ -113,13 +110,13 @@ class ConversationListItem extends StatelessWidget {
           size: 28,
         ),
       ),
-      movementDuration: const Duration(milliseconds: 200),
-      resizeDuration: const Duration(milliseconds: 200),
+      movementDuration: KaliDurations.normal,
+      resizeDuration: KaliDurations.normal,
       child: InkWell(
         onTap: onTap,
         child: Container(
           height: 72,
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: KaliSpacing.paddingScreenH,
           decoration: const BoxDecoration(
             color: KaliColors.bgSecondary,
             border: Border(
@@ -133,14 +130,10 @@ class ConversationListItem extends StatelessWidget {
                 backgroundColor: KaliColors.bgTertiary,
                 child: Text(
                   conversation.apiProvider[0].toUpperCase(),
-                  style: const TextStyle(
-                    color: KaliColors.textPrimary,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 16,
-                  ),
+                  style: KaliTextStyles.bodyBold.copyWith(fontSize: 16),
                 ),
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: KaliSpacing.md),
               Expanded(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -150,32 +143,22 @@ class ConversationListItem extends StatelessWidget {
                       conversation.title,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        color: KaliColors.textPrimary,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                      ),
+                      style: KaliTextStyles.subtitle,
                     ),
-                    const SizedBox(height: 4),
+                    SizedBox(height: KaliSpacing.xs),
                     Text(
                       '${conversation.apiProvider} · ${conversation.model}',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        color: KaliColors.textSecondary,
-                        fontSize: 12,
-                      ),
+                      style: KaliTextStyles.caption,
                     ),
                   ],
                 ),
               ),
-              const SizedBox(width: 8),
+              SizedBox(width: KaliSpacing.sm),
               Text(
                 _formatDate(conversation.updatedAt),
-                style: const TextStyle(
-                  color: KaliColors.textSecondary,
-                  fontSize: 12,
-                ),
+                style: KaliTextStyles.caption,
               ),
             ],
           ),

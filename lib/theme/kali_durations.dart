@@ -11,7 +11,8 @@ class KaliDurations {
   static const Duration slow    = Duration(milliseconds: 300);
   static const Duration cursor  = Duration(milliseconds: 500);
   static const Duration spinner = Duration(milliseconds: 1000);
-  static const Duration pulsing = Duration(milliseconds: 800);
+  static const Duration pulsing  = Duration(milliseconds: 800);
+  static const Duration skeleton = Duration(milliseconds: 1500);
 }
 
 /// Standard-Curves für die App.

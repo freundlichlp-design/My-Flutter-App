@@ -4,6 +4,9 @@ import 'package:flutter_highlight/flutter_highlight.dart';
 import 'package:flutter_highlight/themes/github-dark.dart';
 
 import '../../../../theme/kali_colors.dart';
+import '../../../../theme/kali_radius.dart';
+import '../../../../theme/kali_spacing.dart';
+import '../../../../theme/kali_text_styles.dart';
 
 class CodeBlock extends StatelessWidget {
   final String code;
@@ -20,10 +23,10 @@ class CodeBlock extends StatelessWidget {
     final lang = language ?? '';
 
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 8),
+      margin: const EdgeInsets.symmetric(vertical: KaliSpacing.sm),
       decoration: BoxDecoration(
-        color: const Color(0xFF0D1117),
-        borderRadius: BorderRadius.circular(8),
+        color: KaliColors.bgPrimary,
+        borderRadius: KaliRadius.codeBlock,
         border: Border.all(
           color: KaliColors.borderColor,
           width: 1,
@@ -34,12 +37,15 @@ class CodeBlock extends StatelessWidget {
         children: [
           // Header with language label and copy button
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            decoration: const BoxDecoration(
-              color: Color(0xFF161B22),
+            padding: const EdgeInsets.symmetric(
+              horizontal: KaliSpacing.md,
+              vertical: KaliSpacing.sm,
+            ),
+            decoration: BoxDecoration(
+              color: KaliColors.bgSecondary,
               borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(8),
-                topRight: Radius.circular(8),
+                topLeft: Radius.circular(KaliRadius.md),
+                topRight: Radius.circular(KaliRadius.md),
               ),
             ),
             child: Row(
@@ -47,17 +53,16 @@ class CodeBlock extends StatelessWidget {
               children: [
                 Text(
                   lang.isNotEmpty ? lang : 'code',
-                  style: const TextStyle(
-                    color: KaliColors.textSecondary,
-                    fontSize: 12,
-                    fontFamily: 'monospace',
-                  ),
+                  style: KaliTextStyles.caption.copyWith(fontFamily: 'monospace'),
                 ),
                 InkWell(
                   onTap: () => _copyToClipboard(context),
-                  borderRadius: BorderRadius.circular(4),
-                  child: const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                  borderRadius: BorderRadius.circular(KaliRadius.sm),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: KaliSpacing.xs,
+                      vertical: KaliSpacing.xxs,
+                    ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -66,13 +71,10 @@ class CodeBlock extends StatelessWidget {
                           size: 14,
                           color: KaliColors.textSecondary,
                         ),
-                        SizedBox(width: 4),
+                        SizedBox(width: KaliSpacing.xs),
                         Text(
                           'Copy',
-                          style: TextStyle(
-                            color: KaliColors.textSecondary,
-                            fontSize: 12,
-                          ),
+                          style: KaliTextStyles.caption,
                         ),
                       ],
                     ),
@@ -92,12 +94,8 @@ class CodeBlock extends StatelessWidget {
                 code,
                 language: lang.isNotEmpty ? lang : null,
                 theme: githubDarkTheme,
-                padding: const EdgeInsets.all(12),
-                textStyle: const TextStyle(
-                  fontFamily: 'monospace',
-                  fontSize: 13,
-                  height: 1.5,
-                ),
+                padding: const EdgeInsets.all(KaliSpacing.md),
+                textStyle: KaliTextStyles.code.copyWith(backgroundColor: Colors.transparent),
               ),
             ),
           ),

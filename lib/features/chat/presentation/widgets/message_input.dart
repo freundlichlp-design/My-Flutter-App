@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../../../../theme/kali_colors.dart';
+import '../../../../theme/kali_radius.dart';
+import '../../../../theme/kali_spacing.dart';
+import '../../../../theme/kali_text_styles.dart';
 
 class MessageInput extends StatefulWidget {
   final ValueChanged<String> onSend;
@@ -50,7 +53,7 @@ class _MessageInputState extends State<MessageInput> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+        padding: KaliSpacing.paddingSM,
         decoration: const BoxDecoration(
           color: KaliColors.bgTertiary,
           border: Border(
@@ -68,7 +71,7 @@ class _MessageInputState extends State<MessageInput> {
                 ),
                 decoration: BoxDecoration(
                   color: KaliColors.bgTertiary,
-                  borderRadius: BorderRadius.circular(24),
+                  borderRadius: KaliRadius.inputField,
                   border: Border.all(
                     color: _isFocused
                         ? KaliColors.accentPrimary
@@ -83,27 +86,20 @@ class _MessageInputState extends State<MessageInput> {
                   maxLines: null,
                   textInputAction: TextInputAction.send,
                   onSubmitted: (_) => _handleSend(),
-                  style: const TextStyle(
-                    fontSize: 15,
-                    color: Colors.white,
-                    height: 1.5,
-                  ),
-                  decoration: const InputDecoration(
+                  style: KaliTextStyles.body.copyWith(color: KaliColors.textInverse),
+                  decoration: InputDecoration(
                     hintText: 'Schreibe eine Nachricht...',
-                    hintStyle: TextStyle(
-                      color: KaliColors.textMuted,
-                      fontSize: 15,
-                    ),
+                    hintStyle: KaliTextStyles.muted,
                     border: InputBorder.none,
-                    contentPadding: EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 12,
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: KaliSpacing.md,
+                      vertical: KaliSpacing.md,
                     ),
                   ),
                 ),
               ),
             ),
-            const SizedBox(width: 8),
+            SizedBox(width: KaliSpacing.sm),
             // Send Button - Circle, 40px, accentPrimary bg
             Container(
               width: 40,
@@ -118,7 +114,7 @@ class _MessageInputState extends State<MessageInput> {
                 onPressed: widget.enabled ? _handleSend : null,
                 icon: const Icon(
                   Icons.send,
-                  color: Colors.white,
+                  color: KaliColors.textInverse,
                   size: 20,
                 ),
                 padding: EdgeInsets.zero,
