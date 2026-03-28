@@ -5,6 +5,8 @@ import 'package:provider/provider.dart';
 import '../../../../../providers/settings_provider.dart';
 import '../../../../../models/kali_personality.dart';
 import '../../../../../theme/kali_colors.dart';
+import '../../../../../theme/kali_spacing.dart';
+import '../../../../../theme/kali_text_styles.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -46,13 +48,49 @@ class _SettingsScreenState extends State<SettingsScreen> {
       body: Consumer<SettingsProvider>(
         builder: (context, settings, _) {
           return ListView(
-            padding: const EdgeInsets.all(16),
+            padding: KaliSpacing.paddingMD,
             children: [
+              // Theme Toggle
+              Container(
+                padding: KaliSpacing.paddingSM,
+                decoration: BoxDecoration(
+                  color: KaliColors.bgSecondary,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: KaliColors.borderColor),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          settings.isDarkMode ? Icons.dark_mode : Icons.light_mode,
+                          color: KaliColors.accentPrimary,
+                        ),
+                        const SizedBox(width: KaliSpacing.sm),
+                        Text(
+                          'Dark Mode',
+                          style: KaliTextStyles.body,
+                        ),
+                      ],
+                    ),
+                    Switch(
+                      value: settings.isDarkMode,
+                      onChanged: (_) => settings.toggleThemeMode(),
+                      activeColor: KaliColors.accentPrimary,
+                      activeTrackColor: KaliColors.accentPrimary.withValues(alpha: 0.3),
+                      inactiveThumbColor: KaliColors.textMuted,
+                      inactiveTrackColor: KaliColors.bgTertiary,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: KaliSpacing.lg),
               Text(
                 'API Provider',
-                style: Theme.of(context).textTheme.titleMedium,
+                style: KaliTextStyles.subtitle,
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: KaliSpacing.sm),
               SegmentedButton<String>(
                 segments: const [
                   ButtonSegment(value: 'openai', label: Text('OpenAI')),
@@ -64,12 +102,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   settings.setSelectedProvider(selected.first);
                 },
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: KaliSpacing.lg),
               Text(
                 'Model',
-                style: Theme.of(context).textTheme.titleMedium,
+                style: KaliTextStyles.subtitle,
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: KaliSpacing.sm),
               DropdownButtonFormField<String>(
                 value: settings.selectedModel,
                 items: settings.availableModels
@@ -82,14 +120,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   border: OutlineInputBorder(),
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: KaliSpacing.lg),
               const Divider(),
-              const SizedBox(height: 16),
+              const SizedBox(height: KaliSpacing.md),
               Text(
                 'Kali Personality',
-                style: Theme.of(context).textTheme.titleMedium,
+                style: KaliTextStyles.subtitle,
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: KaliSpacing.sm),
               DropdownButtonFormField<String>(
                 value: settings.selectedPersonalityId,
                 items: KaliPersonality.all
@@ -105,14 +143,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   border: OutlineInputBorder(),
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: KaliSpacing.lg),
               const Divider(),
-              const SizedBox(height: 16),
+              const SizedBox(height: KaliSpacing.md),
               Text(
                 'API Keys',
-                style: Theme.of(context).textTheme.titleMedium,
+                style: KaliTextStyles.subtitle,
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: KaliSpacing.md),
               _buildApiKeyField(
                 label: 'OpenAI API Key',
                 controller: _openaiController,
@@ -133,14 +171,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 onChanged: settings.setGeminiApiKey,
                 obscured: true,
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: KaliSpacing.lg),
               const Divider(),
-              const SizedBox(height: 16),
+              const SizedBox(height: KaliSpacing.md),
               Text(
                 'Memory & Privacy',
-                style: Theme.of(context).textTheme.titleMedium,
+                style: KaliTextStyles.subtitle,
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: KaliSpacing.sm),
               ListTile(
                 leading: const Icon(Icons.psychology, color: KaliColors.accentPrimary),
                 title: const Text('Memory Einstellungen'),

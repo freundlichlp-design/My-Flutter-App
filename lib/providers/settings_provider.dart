@@ -36,10 +36,12 @@ class SettingsProvider extends ChangeNotifier {
     description: 'Direkt, locker, ehrlich',
     systemPrompt: 'Du bist Kali.',
   );
+  bool _isDarkMode = true;
 
   ApiKeyConfigEntity get apiKeys => _apiKeys;
   ProviderConfigEntity get providerConfig => _providerConfig;
   PersonalityEntity get selectedPersonality => _selectedPersonality;
+  bool get isDarkMode => _isDarkMode;
 
   String get selectedProvider => _providerConfig.selectedProvider;
   String get selectedModel => _providerConfig.selectedModel;
@@ -229,5 +231,10 @@ Regeln:
       ),
     };
     return personalities[id] ?? personalities['default']!;
+  }
+
+  void toggleThemeMode() {
+    _isDarkMode = !_isDarkMode;
+    notifyListeners();
   }
 }
