@@ -71,7 +71,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
               const SizedBox(height: 8),
               DropdownButtonFormField<String>(
-                initialValue: settings.selectedModel,
+                value: settings.selectedModel,
                 items: settings.availableModels
                     .map((m) => DropdownMenuItem(value: m, child: Text(m)))
                     .toList(),
@@ -91,7 +91,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
               const SizedBox(height: 8),
               DropdownButtonFormField<String>(
-                initialValue: settings.selectedPersonalityId,
+                value: settings.selectedPersonalityId,
                 items: KaliPersonality.all
                     .map((p) => DropdownMenuItem(
                           value: p.id,

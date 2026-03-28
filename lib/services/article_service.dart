@@ -11,6 +11,8 @@ class ArticleService {
 
   ArticleService({http.Client? client}) : _client = client ?? http.Client();
 
+  void dispose() => _client.close();
+
   Future<List<Article>> fetchArticles() async {
     final response = await _client.get(Uri.parse('$_baseUrl/posts'));
 

@@ -56,11 +56,12 @@ class GeminiService implements AiApiService {
       };
 
       if (systemPrompt != null) {
-        body['system_instruction'] = {
+        contents.insert(0, {
+          'role': 'user',
           'parts': [
-            {'text': systemPrompt}
+            {'text': 'System instruction: $systemPrompt'}
           ],
-        };
+        });
       }
 
       final uri = Uri.parse(
@@ -123,4 +124,7 @@ class GeminiService implements AiApiService {
       await controller.close();
     }
   }
+
+  @override
+  void dispose() => _client.close();
 }

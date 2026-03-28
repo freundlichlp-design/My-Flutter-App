@@ -149,35 +149,39 @@ class ChatProvider extends ChangeNotifier {
 
     try {
       final apiService = _createApiService();
-      final assistantMessage = Message(
-        id: _uuid.v4(),
-        conversationId: conversation.id,
-        role: 'assistant',
-        content: '',
-        timestamp: DateTime.now(),
-      );
+      try {
+        final assistantMessage = Message(
+          id: _uuid.v4(),
+          conversationId: conversation.id,
+          role: 'assistant',
+          content: '',
+          timestamp: DateTime.now(),
+        );
 
-      _messages.add(assistantMessage);
-      notifyListeners();
-
-      await for (final chunk
-          in apiService.sendMessage(
-        _messages.sublist(0, _messages.length - 1),
-        systemPrompt: _settingsProvider.selectedPersonality.systemPrompt,
-      )) {
-        _streamingContent += chunk;
-        assistantMessage.content = _streamingContent;
+        _messages.add(assistantMessage);
         notifyListeners();
+
+        await for (final chunk
+            in apiService.sendMessage(
+          _messages.sublist(0, _messages.length - 1),
+          systemPrompt: _settingsProvider.selectedPersonality.systemPrompt,
+        )) {
+          _streamingContent += chunk;
+          assistantMessage.content = _streamingContent;
+          notifyListeners();
+        }
+
+        await _storage.saveMessage(assistantMessage);
+
+        conversation.updatedAt = DateTime.now();
+        await _storage.saveConversation(conversation);
+        loadConversations();
+
+        _state = ChatState.idle;
+        _streamingContent = '';
+      } finally {
+        apiService.dispose();
       }
-
-      await _storage.saveMessage(assistantMessage);
-
-      conversation.updatedAt = DateTime.now();
-      await _storage.saveConversation(conversation);
-      loadConversations();
-
-      _state = ChatState.idle;
-      _streamingContent = '';
     } catch (e) {
       _state = ChatState.error;
       _errorMessage = e.toString();

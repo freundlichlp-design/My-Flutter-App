@@ -110,4 +110,7 @@ class ClaudeService implements AiApiService {
       await controller.close();
     }
   }
+
+  @override
+  void dispose() => _client.close();
 }

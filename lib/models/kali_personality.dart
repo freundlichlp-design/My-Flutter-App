@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 class KaliPersonality {
   final String id;
   final String name;
@@ -102,7 +104,10 @@ Regeln:
   static KaliPersonality getById(String id) {
     return all.firstWhere(
       (p) => p.id == id,
-      orElse: () => defaultPersonality,
+      orElse: () {
+        debugPrint('Warning: Personality "$id" not found, using default');
+        return defaultPersonality;
+      },
     );
   }
 }
