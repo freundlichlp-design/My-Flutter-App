@@ -1,32 +1,31 @@
 # FEATURE_DAILY.md - Tag 4 Tasks
 
 > Feature Agent — 28.03.2026
-> Tägliche Tasks für Feature-Entwicklung
 
 ---
 
-## Status Update
+## Status
 
-| Feature | Status | Letzte Aktualisierung |
-|---------|--------|----------------------|
-| Code Highlighting | 🔧 IN PROGRESS | Tag 2 — Integration ausstehend |
-| Emotion Response System | ❌ TODO | — |
-| Memory System | ❌ TODO | — |
-| Voice Mode | ❌ TODO | — |
+| Feature | Status |
+|---------|--------|
+| Code Highlighting | 🔧 IN PROGRESS |
+| Emotion Response | ❌ TODO |
+| Memory System | ❌ TODO |
+| Voice Mode | ❌ TODO |
 
 ---
 
-## Task 1: Code Highlighting — ChatBubble Integration (Tag 4)
+## Task 1: Code Highlighting — ChatBubble Integration
 
 ### Ziel
-Code-Block Highlighting in ChatBubble Widget vollständig integrieren.
+Code-Block Highlighting in ChatBubble vollständig integrieren.
 
 ### Fortschritt
-- ✅ `flutter_highlight` Package installiert
+- ✅ `flutter_highlight` installiert
 - ✅ GitHub Dark Theme definiert
 - ❌ Chat-Integration fehlt
 
-### Heutige Schritte
+### Schritte
 
 1. **`lib/widgets/code_block.dart` erstellen**
    - `HighlightView` mit GitHub Dark Theme
@@ -39,26 +38,25 @@ Code-Block Highlighting in ChatBubble Widget vollständig integrieren.
    - Regex: ` ```(\w+)?\n` für Sprach-Erkennung
    - Ersetze plain-text durch `CodeBlock` Widget
 
-3. **Test & Validate**
+3. **Test**
    - Syntax-Highlighting für Dart, Python, JavaScript
    - Copy-Funktion → Snackbar "Code kopiert"
    - Responsive Layout bei langem Code
 
 ### Acceptance Criteria
 - [ ] Code-Blocks haben Syntax-Highlighting
-- [ ] Sprach-Label sichtbar (dart, python, json)
+- [ ] Sprach-Label sichtbar
 - [ ] Copy-Button kopiert in Clipboard
-- [ ] Snackbar-Bestätigung erscheint
 - [ ] Scrollable bei langem Code
 
 ---
 
-## Task 2: Emotion Engine — Basis-System (Tag 4)
+## Task 2: Emotion Engine — Basis
 
 ### Ziel
 EmotionEngine Grundgerüst für emotionale Response-Steuerung.
 
-### Files zu erstellen
+### Files
 
 1. **`lib/services/emotion_engine.dart`**
    - `buildEmotionalContext()` → System Prompt String
@@ -70,72 +68,22 @@ EmotionEngine Grundgerüst für emotionale Response-Steuerung.
    - `EmotionEngine.buildEmotionalContext()` aufrufen
    - Context nach Personality, vor Memory injecten
 
-### Erste Implementierung
-
-```dart
-// emotion_engine.dart
-class EmotionEngine {
-  String buildEmotionalContext(List<ChatMessage> messages) {
-    final recent = messages.reversed.take(10).toList();
-    
-    if (_hasRepetitiveQuestions(recent)) {
-      return "Der User fragt bereits wiederholt dasselbe. Sei direkt.";
-    }
-    if (_showsFrustration(recent)) {
-      return "Der User scheint frustriert. Sei hilfreich und kurz.";
-    }
-    if (_hasComplexTopic(recent)) {
-      return "Dies ist ein spannendes Thema. Du darfst ausführlicher sein.";
-    }
-    return "";
-  }
-  
-  bool _hasRepetitiveQuestions(List<ChatMessage> msgs) {
-    // Keyword-Overlap Vergleich
-  }
-  
-  bool _showsFrustration(List<ChatMessage> msgs) {
-    // Keywords: "nicht", "warum", "fehler", "geht nicht"
-  }
-  
-  bool _hasComplexTopic(List<ChatMessage> msgs) {
-    // Message-Länge > 200, Code-Blocks
-  }
-}
-```
-
 ### Acceptance Criteria
 - [ ] `emotion_engine.dart` erstellt
-- [ ] Repetitive Questions Detection funktioniert
+- [ ] Repetitive Questions Detection
 - [ ] Frustration Detection aktiv
-- [ ] System Prompt Context wird injected
-- [ ] Keine UI-Emojis, nur Ton-Anpassung
+- [ ] System Prompt Context injected
 
 ---
 
-## Implementation Reihenfolge
+## Reihenfolge
 
 ```
-Vormittag:
-1. Code Highlighting fertigstellen (~2h)
-
-Nachmittag:
-2. Emotion Engine Basis (~2h)
-
-Abend:
-- Test-Run: `flutter run`
-- Commit: Feature Agent Tag 4
+Vormittag: Code Highlighting (~2h)
+Nachmittag: Emotion Engine (~2h)
+Abend: Test + Commit
 ```
-
----
-
-## Quick-Start für Kilo Code
-
-1. **Starte mit Task 1** — Code Highlighting ist fast fertig
-2. **Dann Task 2** — Emotion Engine ist System-Prompt-only
-3. **Test nach jedem Task** — `flutter run` und prüfen
 
 ---
 
 *Feature Agent Tag 4 — 28.03.2026*
-*Fokus: Code Highlighting fertigstellen + Emotion Engine starten*
