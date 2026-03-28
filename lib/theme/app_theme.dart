@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
 import 'kali_colors.dart';
+import 'kali_radius.dart';
+import 'kali_spacing.dart';
+import 'kali_text_styles.dart';
 
 class AppTheme {
   AppTheme._();
@@ -8,13 +11,13 @@ class AppTheme {
   static ThemeData get darkTheme {
     final colorScheme = ColorScheme.dark(
       primary: KaliColors.accentPrimary,
-      onPrimary: Colors.white,
+      onPrimary: KaliColors.textInverse,
       secondary: KaliColors.bgTertiary,
       onSecondary: KaliColors.textPrimary,
       surface: KaliColors.bgSecondary,
       onSurface: KaliColors.textPrimary,
       error: KaliColors.accentDanger,
-      onError: Colors.white,
+      onError: KaliColors.textInverse,
       errorContainer: KaliColors.accentDanger.withValues(alpha: 0.15),
       onErrorContainer: KaliColors.accentDanger,
     );
@@ -35,29 +38,29 @@ class AppTheme {
         color: KaliColors.bgSecondary,
         surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: KaliRadius.card,
           side: const BorderSide(color: KaliColors.borderColor),
         ),
       ),
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
         backgroundColor: KaliColors.accentPrimary,
-        foregroundColor: Colors.white,
+        foregroundColor: KaliColors.textInverse,
       ),
       inputDecorationTheme: InputDecorationTheme(
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(KaliRadius.md),
           borderSide: const BorderSide(color: KaliColors.borderColor),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(KaliRadius.md),
           borderSide: const BorderSide(color: KaliColors.borderColor),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: KaliColors.accentPrimary, width: 2),
+          borderRadius: BorderRadius.circular(KaliRadius.md),
+          borderSide: const BorderSide(color: KaliColors.borderFocus, width: 2),
         ),
-        labelStyle: const TextStyle(color: KaliColors.textSecondary),
-        hintStyle: const TextStyle(color: KaliColors.textMuted),
+        labelStyle: KaliTextStyles.label.copyWith(color: KaliColors.textSecondary),
+        hintStyle: KaliTextStyles.muted,
       ),
       segmentedButtonTheme: SegmentedButtonThemeData(
         style: ButtonStyle(
@@ -76,7 +79,7 @@ class AppTheme {
       dropdownMenuTheme: DropdownMenuThemeData(
         inputDecorationTheme: InputDecorationTheme(
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(KaliRadius.md),
             borderSide: const BorderSide(color: KaliColors.borderColor),
           ),
         ),
@@ -87,9 +90,9 @@ class AppTheme {
       ),
       snackBarTheme: SnackBarThemeData(
         backgroundColor: KaliColors.bgTertiary,
-        contentTextStyle: const TextStyle(color: KaliColors.textPrimary),
+        contentTextStyle: KaliTextStyles.body,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(KaliRadius.md),
         ),
         behavior: SnackBarBehavior.floating,
       ),
@@ -97,37 +100,17 @@ class AppTheme {
         backgroundColor: KaliColors.bgTertiary,
         surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(KaliRadius.lg),
         ),
-        titleTextStyle: const TextStyle(
-          color: KaliColors.textPrimary,
-          fontSize: 18,
-          fontWeight: FontWeight.w600,
-        ),
-        contentTextStyle: const TextStyle(
-          color: KaliColors.textSecondary,
-          fontSize: 15,
-        ),
+        titleTextStyle: KaliTextStyles.subtitle,
+        contentTextStyle: KaliTextStyles.body.copyWith(color: KaliColors.textSecondary),
       ),
-      textTheme: const TextTheme(
-        headlineSmall: TextStyle(
-          color: KaliColors.textPrimary,
-          fontWeight: FontWeight.w600,
-        ),
-        titleMedium: TextStyle(
-          color: KaliColors.textPrimary,
-          fontWeight: FontWeight.w600,
-        ),
-        bodyLarge: TextStyle(
-          color: KaliColors.textPrimary,
-          height: 1.5,
-        ),
-        bodyMedium: TextStyle(
-          color: KaliColors.textSecondary,
-        ),
-        bodySmall: TextStyle(
-          color: KaliColors.textSecondary,
-        ),
+      textTheme: TextTheme(
+        headlineSmall: KaliTextStyles.headline,
+        titleMedium: KaliTextStyles.subtitle,
+        bodyLarge: KaliTextStyles.body,
+        bodyMedium: KaliTextStyles.body.copyWith(color: KaliColors.textSecondary),
+        bodySmall: KaliTextStyles.caption,
       ),
     );
   }
