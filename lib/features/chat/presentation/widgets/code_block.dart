@@ -4,6 +4,7 @@ import 'package:flutter_highlight/flutter_highlight.dart';
 import 'package:flutter_highlight/themes/github-dark.dart';
 
 import '../../../../theme/kali_colors.dart';
+import '../../../../theme/kali_durations.dart';
 import '../../../../theme/kali_radius.dart';
 import '../../../../theme/kali_spacing.dart';
 import '../../../../theme/kali_text_styles.dart';

@@ -45,8 +45,8 @@ class ImagePickerButton extends StatelessWidget {
     showModalBottomSheet(
       context: context,
       backgroundColor: KaliColors.bgSecondary,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(KaliRadius.lg)),
       ),
       builder: (ctx) => SafeArea(
         child: Padding(

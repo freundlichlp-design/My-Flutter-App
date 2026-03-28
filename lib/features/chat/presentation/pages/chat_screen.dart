@@ -5,6 +5,10 @@ import 'package:provider/provider.dart';
 import '../../../../../providers/chat_provider.dart';
 import '../../../../../providers/settings_provider.dart';
 import '../../../../../providers/subscription_provider.dart';
+import '../../../../../theme/kali_colors.dart';
+import '../../../../../theme/kali_durations.dart';
+import '../../../../../theme/kali_radius.dart';
+import '../../../../../theme/kali_spacing.dart';
 import '../widgets/chat_bubble.dart';
 import '../widgets/message_input.dart';
 import '../widgets/streaming_indicator.dart';
@@ -24,8 +28,8 @@ class _ChatScreenState extends State<ChatScreen> {
       Future.delayed(const Duration(milliseconds: 100), () {
         _scrollController.animateTo(
           _scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 200),
-          curve: Curves.easeOut,
+          duration: KaliDurations.normal,
+          curve: KaliCurves.slideUp,
         );
       });
     }
@@ -62,10 +66,10 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget _buildUsageBar(BuildContext context, SubscriptionProvider sub) {
     final ratio = sub.messagesUsedToday / sub.dailyLimit;
     final color = sub.remainingMessages <= 2
-        ? Colors.redAccent
+        ? KaliColors.accentDanger
         : sub.remainingMessages <= 5
-            ? Colors.orangeAccent
-            : Theme.of(context).colorScheme.primary;
+            ? KaliColors.accentWarning
+            : KaliColors.accentPrimary;
 
     return GestureDetector(
       onTap: () => context.push('/paywall'),
@@ -77,10 +81,10 @@ class _ChatScreenState extends State<ChatScreen> {
           children: [
             Expanded(
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(4),
+                borderRadius: BorderRadius.circular(KaliRadius.sm),
                 child: LinearProgressIndicator(
                   value: ratio,
-                  backgroundColor: Colors.white12,
+                  backgroundColor: KaliColors.bgTertiary,
                   valueColor: AlwaysStoppedAnimation(color),
                   minHeight: 4,
                 ),

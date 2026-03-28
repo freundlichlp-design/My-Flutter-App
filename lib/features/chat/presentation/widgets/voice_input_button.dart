@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../services/voice_service.dart';
 import '../../../../theme/kali_colors.dart';
+import '../../../../theme/kali_durations.dart';
 
 class VoiceInputButton extends StatefulWidget {
   final ValueChanged<String> onTextRecognized;
@@ -32,7 +33,7 @@ class _VoiceInputButtonState extends State<VoiceInputButton>
     super.initState();
     _animationController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 800),
+      duration: KaliDurations.pulsing,
     );
     _pulseAnimation = Tween<double>(begin: 1.0, end: 1.3).animate(
       CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),

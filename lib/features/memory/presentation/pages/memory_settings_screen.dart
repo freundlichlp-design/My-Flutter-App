@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../../../providers/memory_provider.dart';
 import '../../../../theme/kali_colors.dart';
+import '../../../../theme/kali_radius.dart';
 import '../../../../theme/kali_spacing.dart';
 import '../../../../theme/kali_text_styles.dart';
 
@@ -26,7 +27,7 @@ class MemorySettingsScreen extends StatelessWidget {
                 padding: KaliSpacing.paddingMD,
                 decoration: BoxDecoration(
                   color: KaliColors.bgSecondary,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: KaliRadius.card,
                   border: Border.all(color: KaliColors.borderColor),
                 ),
                 child: Row(
